@@ -12,8 +12,8 @@ Este proyecto se va a realizar para la materia de Ingenieria del Software 2
 
 ## Plantillas p/ Pull Request:
 
-**Titulo** -> Breve descripcion del cambio realizado o de la nueva funcionalidad.
-**Descripcion** -> 
+**Titulo** -> Breve descripcion del cambio realizado o de la nueva funcionalidad.<br/>
+**Descripcion** -><br/> 
     * Descripcion detallada del cambio realizado o de la funcionalidad agregada.<br/>
     * Motivo del cambio o instrucciones de uso de la nueva funcionalidad.<br/>
     * Lista de verificaciones realizadas: pruebas unitarias o de integracion.<br/>
@@ -21,8 +21,8 @@ Este proyecto se va a realizar para la materia de Ingenieria del Software 2
 
 ## Plantillas p/ Issues:
 
-**Titulo** -> Breve descripcion del problema
-**Descripcion** -> 
+**Titulo** -> Breve descripcion del problema.<br/>
+**Descripcion** -><br/> 
     * Descripcion detallada del problema.<br/>
     * Informacion sobre el entorno y las condiciones que sucede el problema.<br/>
     * Pasos p/ reproducir el problema.<br/>
