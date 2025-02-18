@@ -3,15 +3,15 @@ import lombok.*;
 import jakarta.persistence.*;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import java.io.Serial;
-import java.io.Serializable;
-import com.fiuni.adoptamena.api.domain.user.User;
+
+import com.fiuni.adoptamena.api.domain.user.UserDomain;
 
 @Entity
 @Table(name = "profiles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Profile extends BaseDomain {
+public class Profile implements BaseDomain {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public class Profile extends BaseDomain {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id_profile")
-    private User user;
+    private UserDomain user;
 
     @Column(name="str_organization_name")
     private String organizationName;
