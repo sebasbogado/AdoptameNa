@@ -1,142 +1,94 @@
 package com.fiuni.adoptamena.auth.integration;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
-
-import com.fiuni.adoptamena.auth.AuthResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiuni.adoptamena.auth.LoginRequest;
 import com.fiuni.adoptamena.auth.RegisterRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestPropertySource(properties = "server.port=8081")
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
 class AuthControllerIntegrationTest {
-    @BeforeEach
-    public void setUp() throws InterruptedException {
-        Thread.sleep(1000); // Espera 1 segundo
-    }
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @LocalServerPort
-    private int port;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    private String getBaseUrl() {
-        return "http://localhost:" + port;
-    }
+        @Test
+        void testRegisterAndLoginFlow() throws Exception {
+                String email = "usertest@example.com";
+                System.out.println(email);
+                String password = "password123";
+                RegisterRequest registerRequest = new RegisterRequest(email, password);
 
-    @Test
-    void registerAndLoginFlow_Success() {
-        // Arrange
-        String email = "newuser@example.com";
-        String password = "password123";
-        RegisterRequest registerRequest = new RegisterRequest(email, password);
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(registerRequest)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.token").exists());
 
-        // Act - Register
-        ResponseEntity<AuthResponse> registerResponse = restTemplate.postForEntity(
-                getBaseUrl() + "/auth/register",
-                registerRequest,
-                AuthResponse.class);
+                LoginRequest loginRequest = new LoginRequest(email, password);
+                mockMvc.perform(post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.token").exists());
+        }
 
-        // Assert - Register
-        assertEquals(HttpStatus.OK, registerResponse.getStatusCode(), "El registro debe ser exitoso");
-        AuthResponse registerResponseBody = registerResponse.getBody();
-        assertNotNull(registerResponseBody, "El cuerpo de la respuesta debe no ser nulo");
-        assertNotNull(registerResponseBody.getToken(), "El registro debe devolver un token");
+        @Test
+        void testRegisterWithExistingEmail() throws Exception {
+                String email = "existing@example.com";
+                RegisterRequest request = new RegisterRequest(email, "password123");
 
-        // Act - Login
-        LoginRequest loginRequest = new LoginRequest(email, password);
-        ResponseEntity<AuthResponse> loginResponse = restTemplate.postForEntity(
-                getBaseUrl() + "/auth/login",
-                loginRequest,
-                AuthResponse.class);
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk());
 
-        // Assert - Login
-        assertEquals(HttpStatus.OK, loginResponse.getStatusCode(), "El login debe ser exitoso");
-        AuthResponse loginResponseBody = loginResponse.getBody();
-        assertNotNull(loginResponseBody, "El cuerpo de la respuesta debe no ser nulo");
-        assertNotNull(loginResponseBody.getToken(), "El login debe devolver un token");
-    }
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    void register_WithExistingEmail_ShouldFail() {
-        // Arrange
-        String email = "existing@example.com";
-        String password = "password123";
-        RegisterRequest firstRegister = new RegisterRequest(email, password);
-        RegisterRequest secondRegister = new RegisterRequest(email, "differentpassword");
+        @Test
+        void testLoginWithInvalidCredentials() throws Exception {
+                LoginRequest loginRequest = new LoginRequest("nonexistent@example.com", "wrongpassword");
 
-        // Act - First registration
-        restTemplate.postForEntity(
-                getBaseUrl() + "/auth/register",
-                firstRegister,
-                AuthResponse.class);
+                mockMvc.perform(post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest)))
+                                .andExpect(status().isUnauthorized());
+        }
 
-        // Act - Second registration with same email
-        ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
-                getBaseUrl() + "/auth/register",
-                secondRegister,
-                AuthResponse.class);
+        @Test
+        void testRegisterWithInvalidEmail() throws Exception {
+                RegisterRequest request = new RegisterRequest("invalidemail", "password123");
 
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(),
-                "Registration with existing email should fail");
-    }
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    void login_WithInvalidCredentials_ShouldFail() {
-        // Arrange
-        LoginRequest loginRequest = new LoginRequest("nonexistent@example.com", "wrongpassword");
+        @Test
+        void testRegisterWithShortPassword() throws Exception {
+                RegisterRequest request = new RegisterRequest("valid@example.com", "123");
 
-        // Act
-        ResponseEntity<AuthResponse> loginResponse = restTemplate.postForEntity(
-                getBaseUrl() + "/auth/login",
-                loginRequest,
-                AuthResponse.class);
-
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, loginResponse.getStatusCode(),
-                "Login with invalid credentials should fail");
-    }
-
-    @Test
-    void register_WithInvalidEmail_ShouldFail() {
-        // Arrange
-        RegisterRequest registerRequest = new RegisterRequest("invalidemail", "password123");
-
-        // Act
-        ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
-                getBaseUrl() + "/auth/register",
-                registerRequest,
-                AuthResponse.class);
-
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(),
-                "El registro con un email no válido debe fallar");
-    }
-
-    @Test
-    void register_WithShortPassword_ShouldFail() {
-        // Arrange
-        RegisterRequest registerRequest = new RegisterRequest("valid@example.com", "123");
-
-        // Act
-        ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
-                getBaseUrl() + "/auth/register",
-                registerRequest,
-                AuthResponse.class);
-
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(),
-                "El registro con una contraseña corta debe fallar");
-    }
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
 }
