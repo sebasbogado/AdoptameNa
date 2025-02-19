@@ -12,6 +12,7 @@ import com.fiuni.adoptamena.api.domain.user.UserDomain;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Profile implements BaseDomain {
+    
     @Serial
     private static final long serialVersionUID = 1L;
 
