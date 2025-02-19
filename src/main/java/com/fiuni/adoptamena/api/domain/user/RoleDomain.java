@@ -4,8 +4,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import java.io.Serial;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "roles")
