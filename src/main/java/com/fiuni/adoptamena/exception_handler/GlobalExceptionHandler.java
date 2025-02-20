@@ -53,6 +53,7 @@ public class GlobalExceptionHandler {
     }
 
     // Manejar MethodArgumentTypeMismatchException para errores de tipo de argumento
+    @SuppressWarnings("null")
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
             WebRequest request) {
