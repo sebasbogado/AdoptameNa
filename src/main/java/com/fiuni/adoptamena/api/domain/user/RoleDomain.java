@@ -4,8 +4,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import java.io.Serial;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -13,6 +11,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleDomain implements BaseDomain {
+
+    @Serial
+	private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

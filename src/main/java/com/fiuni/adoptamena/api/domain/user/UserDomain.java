@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
+import java.io.Serial;
 import java.util.*;
 
 @Entity
@@ -17,6 +17,9 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDomain implements BaseDomain, UserDetails {
+
+    @Serial
+	private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
