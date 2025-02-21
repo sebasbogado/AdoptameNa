@@ -1,15 +1,16 @@
 package com.fiuni.adoptamena.api.dto;
 
-import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostTypeDto implements BaseDto {
+public class PostTypeDto implements Serializable {
 
 
     @Serial

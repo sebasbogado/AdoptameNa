@@ -17,6 +17,20 @@ public class PostTypeController {
     public ResponseEntity<PostTypeDto> create(@RequestBody() PostTypeDto postTypeDto) {
 
         PostTypeDto data = this.postTypeService.save(postTypeDto);
-        return ResponseEntity.ok(postTypeService.createPostType(postTypeDto));
+        return ResponseEntity.status(201).body(data);
     }
+
+    @PutMapping({"/{id}"})
+    public ResponseEntity<PostTypeDto> update(@PathVariable(name = "id", required = true) int id,@RequestBody() PostTypeDto postTypeDto) {
+
+        PostTypeDto data = this.postTypeService.updateById(id, postTypeDto);
+        return ResponseEntity.status(201).body(data);
+    }
+
+    @DeleteMapping({"/{id}"})
+    public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) int id) {
+        this.postTypeService.deleteById(id);
+        return ResponseEntity.status(200).body("Se ha eliminado el tipo de post");
+    }
+
 }
