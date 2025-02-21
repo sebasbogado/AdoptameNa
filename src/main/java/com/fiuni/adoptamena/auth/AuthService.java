@@ -61,6 +61,11 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        // Validar el role
+        if (!("USER".equalsIgnoreCase(request.getRole()) || "ORGANIZATION".equalsIgnoreCase(request.getRole()))) {
+            throw new BadRequestException("Rol inválido. Debe ser 'USER' o 'ORGANIZATION'");
+        }
+
         // Crear el usuario
         UserDomain user = new UserDomain();
         user.setUsername(request.getEmail());
@@ -68,8 +73,8 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         // Obtener el rol
-        user.setRole(roleDao.findByName("user")
-                .orElseThrow(() -> new RuntimeException("Role not found")));
+        user.setRole(roleDao.findByName(request.getRole().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.getRole())));
 
         user.setDeleted(false);
         user.setCreationDate(new Date());
@@ -78,17 +83,16 @@ public class AuthService {
         try {
             userDao.save(user);
         } catch (DataIntegrityViolationException e) {
-            log.error("Error al guardar usuario. Usuario ya existente1");
+            log.error("Error al guardar usuario. Usuario ya existente", e);
             throw new BadRequestException("Usuario ya existente");
         } catch (PersistenceException e) {
-            log.error("Error al guardar usuario. Usuario ya existente2");
-
+            log.error("Error de persistencia en la base de datos", e);
             throw new BadRequestException("Error de persistencia en la base de datos.");
         } catch (Exception e) {
-            log.error("Error al guardar usuario. Usuario ya existente3");
-            log.error(e.getMessage());
+            log.error("Error al guardar usuario", e);
             throw new RuntimeException("Error al guardar usuario");
         }
+
         // Crear la respuesta
         AuthResponse authResponse = new AuthResponse();
         authResponse.setToken(jwtService.getToken(user));
