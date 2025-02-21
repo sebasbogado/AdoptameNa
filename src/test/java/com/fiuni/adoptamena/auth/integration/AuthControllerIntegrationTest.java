@@ -1,14 +1,11 @@
 package com.fiuni.adoptamena.auth.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.auth.LoginRequest;
 import com.fiuni.adoptamena.auth.RegisterRequest;
 
 import jakarta.transaction.Transactional;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,23 +27,10 @@ class AuthControllerIntegrationTest {
 
         @Autowired
         private ObjectMapper objectMapper;
-        @Autowired
-        private IUserDao userDao;
-
-        @BeforeEach
-        void setUp() {
-                userDao.deleteAll();
-        }
-
-        @AfterEach
-        void tearDown() {
-                userDao.deleteAll();
-        }
 
         @Test
         void testRegisterAndLoginFlow() throws Exception {
                 String email = "usertest@example.com";
-                System.out.println(email);
                 String password = "password123";
                 RegisterRequest registerRequest = new RegisterRequest(email, password);
 
