@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import com.fiuni.adoptamena.utils.EmailService;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -41,6 +43,12 @@ public class AuthService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private VerificationTokenService verificationTokenService;
+
+    @Autowired
+    private EmailService emailService;
 
     public AuthResponse login(LoginRequest request) {
         try {
@@ -72,6 +80,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Role not found")));
 
         user.setDeleted(false);
+        user.setVerified(false);
         user.setCreationDate(new Date());
 
         // Guardar el usuario
@@ -89,10 +98,18 @@ public class AuthService {
             log.error(e.getMessage());
             throw new RuntimeException("Error al guardar usuario");
         }
-        // Crear la respuesta
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setToken(jwtService.getToken(user));
-        return authResponse;
+
+        // Generar token de verificación
+        String token = verificationTokenService.createVerificationToken(user);
+
+        // Enviar email con enlace de verificación
+        String verificationLink = "http://localhost:8080/api/auth/verify-email?token=" + token;
+        emailService.sendVerificationEmail(user.getEmail(), verificationLink);
+
+        // Responder con un mensaje de éxito
+        return AuthResponse.builder()
+                .token("Registro exitoso. Verifica tu email para activar la cuenta.")
+                .build();
     }
 
 }
