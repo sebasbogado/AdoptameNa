@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @Transactional
 public class PostTypeImpl implements IPostTypeService {
@@ -36,6 +34,7 @@ public class PostTypeImpl implements IPostTypeService {
     public PostTypeDto updateById(int id, PostTypeDto postTypeDto) {
         try {
             postTypeDto.setId(id);
+            log.info("PostType update successful");
         }
         catch (Exception e){
             new ErrorResponse("Error updating a Post Type", e.getMessage());
@@ -50,11 +49,28 @@ public class PostTypeImpl implements IPostTypeService {
             PostTypeDomain postTypeDomain = postTypeDao.findById(id).orElse(null);
             if (postTypeDomain != null) {
                 postTypeDao.delete(postTypeDomain);
+                log.info("PostType delete successful");
             }
         } catch (Exception e){
             new ErrorResponse("Error deleting a Post Type", e.getMessage());
         }
     }
 
+
+    private PostTypeDomain convertDtoToDomain(PostTypeDto postTypeDto) {
+        log.info("Converting PostTypeDto to PostTypeDomain");
+
+        PostTypeDomain postTypeDomain = null;
+        try {
+            postTypeDomain = new PostTypeDomain();
+            postTypeDomain.setId(postTypeDto.getId());
+            postTypeDomain.setName(postTypeDto.getName());
+            postTypeDomain.setDescription(postTypeDto.getDescription());
+        }
+        catch (Exception e){
+            new ErrorResponse("Error converting PostTypeDto to PostTypeDomain", e.getMessage());
+        }
+        return postTypeDomain;
+    }
 
 }
