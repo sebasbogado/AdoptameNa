@@ -21,7 +21,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.ExpiredJwtException;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserDetailsService userDetailsService;
 
     @Override
+    @SuppressWarnings("null")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
@@ -91,18 +91,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (JwtException ex) {
             sendErrorResponse(response, "Token inválido", ex.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
         } catch (Exception ex) {
-            sendErrorResponse(response, "Error en la autenticación", ex.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            sendErrorResponse(response, "Error en la autenticación", ex.getMessage(),
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void sendErrorResponse(HttpServletResponse response, String error, String message, int status) throws IOException {
+    private void sendErrorResponse(HttpServletResponse response, String error, String message, int status)
+            throws IOException {
         ErrorResponse errorResponse = new ErrorResponse(error, message);
         response.setStatus(status);
         response.setContentType("application/json");
         response.getWriter().write(errorResponse.toString());
     }
-
-
 
     private String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
