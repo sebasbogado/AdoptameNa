@@ -2,7 +2,6 @@ package com.fiuni.adoptamena.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +23,5 @@ public class RegisterRequest {
     String password;
 
     @NotBlank(message = "El rol no puede estar vacío")
-    @Pattern(regexp = "^(USER|ORGANIZATION)$", message = "El rol debe ser 'USER' o 'ORGANIZATION'")
     private String role;
 }
