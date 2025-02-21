@@ -86,7 +86,7 @@ class AuthServiceTest {
 
     @Test
     void registerSuccess() {
-        RegisterRequest request = new RegisterRequest("test@example.com", "password");
+        RegisterRequest request = new RegisterRequest("test@example.com", "password", "USER");
         RoleDomain userRole = new RoleDomain();
         userRole.setName("user");
 
@@ -111,7 +111,7 @@ class AuthServiceTest {
 
     @Test
     void registerFailsWhenRoleNotFound() {
-        RegisterRequest request = new RegisterRequest("test@example.com", "password");
+        RegisterRequest request = new RegisterRequest("test@example.com", "password", "USER");
 
         when(roleDao.findByName("user")).thenReturn(Optional.empty());
 
