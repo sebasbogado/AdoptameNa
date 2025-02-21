@@ -27,6 +27,7 @@ import com.fiuni.adoptamena.auth.AuthResponse;
 import com.fiuni.adoptamena.auth.AuthService;
 import com.fiuni.adoptamena.auth.LoginRequest;
 import com.fiuni.adoptamena.auth.RegisterRequest;
+import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,7 +86,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void registerSuccess() {
+    void registerUserSuccess() {
         RegisterRequest request = new RegisterRequest("test@example.com", "password", "USER");
         RoleDomain userRole = new RoleDomain();
         userRole.setName("user");
@@ -110,13 +111,40 @@ class AuthServiceTest {
     }
 
     @Test
-    void registerFailsWhenRoleNotFound() {
-        RegisterRequest request = new RegisterRequest("test@example.com", "password", "USER");
+    void registerOrganizationSuccess() {
+        RegisterRequest request = new RegisterRequest("test@example.com", "password", "ORGANIZATION");
+        RoleDomain organizationRole = new RoleDomain();
+        organizationRole.setName("organization");
 
-        when(roleDao.findByName("user")).thenReturn(Optional.empty());
+        when(roleDao.findByName("organization")).thenReturn(Optional.of(organizationRole));
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        when(jwtService.getToken(any(UserDetails.class))).thenReturn("token");
+        when(userDao.save(any(UserDomain.class))).thenAnswer(i -> i.getArgument(0));
 
-        Exception exception = assertThrows(RuntimeException.class, () -> authService.register(request));
+        AuthResponse response = authService.register(request);
 
-        assertEquals("Role not found", exception.getMessage());
+        assertNotNull(response);
+        assertEquals("token", response.getToken());
+
+        ArgumentCaptor<UserDomain> userCaptor = ArgumentCaptor.forClass(UserDomain.class);
+        verify(userDao).save(userCaptor.capture());
+        UserDomain savedUser = userCaptor.getValue();
+
+        assertEquals("test@example.com", savedUser.getEmail());
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertEquals(organizationRole, savedUser.getRole());
     }
+
+    @Test
+    void registerFailsWhenRoleNotFound() {
+        RegisterRequest request = new RegisterRequest("test@example.com", "password", "Unknown");
+
+        assertThrows(BadRequestException.class, () -> {
+            authService.register(request);
+        });
+
+        verify(userDao, never()).save(any(UserDomain.class));
+        verify(jwtService, never()).getToken(any(UserDetails.class));
+    }
+
 }

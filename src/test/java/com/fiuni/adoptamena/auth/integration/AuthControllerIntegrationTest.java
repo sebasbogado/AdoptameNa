@@ -50,6 +50,16 @@ class AuthControllerIntegrationTest {
         }
 
         @Test
+        void testRegisterWithInvalidRole() throws Exception {
+                RegisterRequest request = new RegisterRequest("valid@example.com", "password123", "Invalid");
+
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
         void testRegisterWithExistingEmail() throws Exception {
                 String email = "existing@example.com";
                 String password = "password123";
