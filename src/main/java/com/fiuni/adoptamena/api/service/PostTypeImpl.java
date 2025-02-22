@@ -7,8 +7,12 @@ import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -44,7 +48,7 @@ public class PostTypeImpl implements IPostTypeService {
 
     @Override
     public void deleteById(int id) {
-
+        log.info("Deleting PostType");
         try {
             PostTypeDomain postTypeDomain = postTypeDao.findById(id).orElse(null);
             if (postTypeDomain != null) {
@@ -54,6 +58,56 @@ public class PostTypeImpl implements IPostTypeService {
         } catch (Exception e){
             new ErrorResponse("Error deleting a Post Type", e.getMessage());
         }
+    }
+
+    @Override
+    public PostTypeDto getById(int id) {
+        log.info("Get PostType by id");
+        PostTypeDto postTypeDto = null;
+        try {
+            Optional<PostTypeDomain> postTypeDomainOptional = postTypeDao.findById(id);
+            if (postTypeDomainOptional.isPresent()) {
+                PostTypeDomain postTypeDomain = postTypeDomainOptional.get();
+
+                postTypeDto = convertDomainToDto(postTypeDomain);
+                log.info("PostType get successful");
+            }
+        }
+        catch (Exception e){
+            new ErrorResponse("Error getting a Post Type", e.getMessage());
+        }
+        return postTypeDto;
+    }
+
+    @Override
+    public Page<PostTypeDto> getAllPostTypes(Pageable pageable, String name, String description) {
+        log.info("Get All PostType");
+        if (name == null && description == null) {
+
+            Page<PostTypeDomain> postTypesPage = postTypeDao.findAll(pageable);
+            return postTypesPage.map(this::convertDomainToDto);
+        }
+
+        Page<PostTypeDomain> postTypesPage = postTypeDao.findByNameContainingAndDescriptionContaining(name, description, pageable);
+
+        return postTypesPage.map(this::convertDomainToDto);
+    }
+
+    private PostTypeDto convertDomainToDto(PostTypeDomain postTypeDomain) {
+       log.info("Converting PostTypeDomain to PostTypeDto");
+
+        PostTypeDto postTypeDto = null;
+        try {
+            postTypeDto = new PostTypeDto();
+            postTypeDto.setId(postTypeDomain.getId());
+            postTypeDto.setName(postTypeDomain.getName());
+            postTypeDto.setDescription(postTypeDomain.getDescription());
+
+        }
+        catch (Exception e){
+            new ErrorResponse("Error converting PostTypeDomain to PostTypeDto", e.getMessage());
+        }
+        return postTypeDto;
     }
 
 
