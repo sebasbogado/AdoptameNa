@@ -40,7 +40,7 @@ public class PostDomain implements BaseDomain {
     @Column(name = "date_publication", nullable = false)
     private Date datePost;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_post_type", nullable = false)
     private PostTypeDomain postType;
 

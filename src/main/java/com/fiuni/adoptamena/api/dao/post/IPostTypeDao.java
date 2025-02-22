@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.dao.postType;
+package com.fiuni.adoptamena.api.dao.post;
 
 import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,6 @@
 package com.fiuni.adoptamena.api.service;
 
-import com.fiuni.adoptamena.api.dao.postType.IPostTypeDao;
+import com.fiuni.adoptamena.api.dao.post.IPostTypeDao;
 import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import com.fiuni.adoptamena.api.dto.PostTypeDto;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
@@ -16,9 +16,9 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class PostTypeImpl implements IPostTypeService {
+public class PostTypeServiceImpl implements IPostTypeService {
 
-    private static final Logger log = LoggerFactory.getLogger(PostTypeImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PostTypeServiceImpl.class);
     @Autowired
     IPostTypeDao postTypeDao;
 
