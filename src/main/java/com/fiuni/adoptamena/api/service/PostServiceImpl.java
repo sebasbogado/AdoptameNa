@@ -11,6 +11,8 @@ import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +87,26 @@ public class PostServiceImpl implements IPostService{
             new ErrorResponse("Error getting post", e.getMessage());
         }
         return postDto;
+    }
+
+    @Override
+    public Page<PostDto> getAllPosts(Pageable pageable, String title, String content, Integer userId, Integer postTypeId) {
+        log.info("Getting all posts");
+
+        if (title != null || content != null || userId != null || postTypeId != null) {
+
+            Page<PostDomain> postPage = postDao.findByFilters(pageable, title, content, userId, postTypeId);
+
+
+            return postPage.map(this::convertDomainToDto);
+        }
+
+
+        Page<PostDomain> postPage = postDao.findAll(pageable);
+
+
+        return postPage.map(this::convertDomainToDto);
+
     }
 
     private PostDto convertDomainToDto(PostDomain postDomain) {
