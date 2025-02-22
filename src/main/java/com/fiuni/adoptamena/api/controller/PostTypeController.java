@@ -61,7 +61,7 @@ public class PostTypeController {
     @DeleteMapping({"/{id}"})
     public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) int id) {
         this.postTypeService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Se ha eliminado el tipo de post" + id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("PostType with id: " + id + "was deleted");
     }
 
 }
