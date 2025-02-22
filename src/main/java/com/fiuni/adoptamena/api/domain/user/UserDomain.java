@@ -1,7 +1,7 @@
 package com.fiuni.adoptamena.api.domain.user;
 
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
-import com.fiuni.adoptamena.api.domain.profile.Profile;
+import com.fiuni.adoptamena.api.domain.profile.ProfileDomain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,7 +43,7 @@ public class UserDomain implements BaseDomain, UserDetails {
     private RoleDomain role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Profile profile;
+    private ProfileDomain profile;
 
     @Column(name = "bool_deleted", nullable = false)
     private Boolean deleted;
