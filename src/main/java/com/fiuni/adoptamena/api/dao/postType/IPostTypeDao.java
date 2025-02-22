@@ -1,6 +1,6 @@
 package com.fiuni.adoptamena.api.dao.postType;
 
-import com.fiuni.adoptamena.api.domain.postType.PostTypeDomain;
+import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

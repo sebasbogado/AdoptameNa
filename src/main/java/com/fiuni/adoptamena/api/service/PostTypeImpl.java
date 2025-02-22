@@ -1,7 +1,7 @@
 package com.fiuni.adoptamena.api.service;
 
 import com.fiuni.adoptamena.api.dao.postType.IPostTypeDao;
-import com.fiuni.adoptamena.api.domain.postType.PostTypeDomain;
+import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import com.fiuni.adoptamena.api.dto.PostTypeDto;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;

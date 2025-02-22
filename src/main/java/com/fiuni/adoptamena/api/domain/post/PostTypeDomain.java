@@ -1,11 +1,10 @@
-package com.fiuni.adoptamena.api.domain.postType;
+package com.fiuni.adoptamena.api.domain.post;
 
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.web.WebProperties;
 
 import java.io.Serial;
 
