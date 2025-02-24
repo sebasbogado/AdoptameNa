@@ -37,15 +37,15 @@ public class PostDomain implements BaseDomain {
     private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_publication", nullable = false)
-    private Date datePost;
+    @Column(name = "publication_date", nullable = false)
+    private Date publicationDate;
 
     @ManyToOne
     @JoinColumn(name = "id_post_type", nullable = false)
     private PostTypeDomain postType;
 
     @Column(name = "str_location_coordinates")
-    private String location_coordinates;
+    private String locationCoordinates;
 
     @Column(name = "str_contact_number")
     private String contactNumber;

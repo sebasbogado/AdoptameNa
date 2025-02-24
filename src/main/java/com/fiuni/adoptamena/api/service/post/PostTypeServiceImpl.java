@@ -1,8 +1,9 @@
-package com.fiuni.adoptamena.api.service;
+package com.fiuni.adoptamena.api.service.post;
 
 import com.fiuni.adoptamena.api.dao.post.IPostTypeDao;
 import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import com.fiuni.adoptamena.api.dto.PostTypeDto;
+import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class PostTypeServiceImpl implements IPostTypeService {
+public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTypeDto> implements IPostTypeService {
 
     private static final Logger log = LoggerFactory.getLogger(PostTypeServiceImpl.class);
     @Autowired
@@ -97,7 +98,8 @@ public class PostTypeServiceImpl implements IPostTypeService {
         return postTypesPage.map(this::convertDomainToDto);
     }
 
-    private PostTypeDto convertDomainToDto(PostTypeDomain postTypeDomain) {
+    @Override
+    protected PostTypeDto convertDomainToDto(PostTypeDomain postTypeDomain) {
        log.info("Converting PostTypeDomain to PostTypeDto");
 
         PostTypeDto postTypeDto = null;
@@ -114,8 +116,8 @@ public class PostTypeServiceImpl implements IPostTypeService {
         return postTypeDto;
     }
 
-
-    private PostTypeDomain convertDtoToDomain(PostTypeDto postTypeDto) {
+    @Override
+    protected PostTypeDomain convertDtoToDomain(PostTypeDto postTypeDto) {
         log.info("Converting PostTypeDto to PostTypeDomain");
 
         PostTypeDomain postTypeDomain = null;

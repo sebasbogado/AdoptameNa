@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.service;
+package com.fiuni.adoptamena.api.service.post;
 
 import com.fiuni.adoptamena.api.dao.post.IPostDao;
 import com.fiuni.adoptamena.api.dao.post.IPostTypeDao;
@@ -7,6 +7,7 @@ import com.fiuni.adoptamena.api.domain.post.PostDomain;
 import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.PostDto;
+import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class PostServiceImpl implements IPostService {
+public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implements IPostService {
     private static final Logger log = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Autowired
@@ -102,7 +103,8 @@ public class PostServiceImpl implements IPostService {
         return postPage.map(this::convertDomainToDto);
     }
 
-    private PostDto convertDomainToDto(PostDomain postDomain) {
+    @Override
+    protected PostDto convertDomainToDto(PostDomain postDomain) {
         log.info("Converting PostDomain to PostDto");
 
         PostDto postDto = null;
@@ -111,10 +113,10 @@ public class PostServiceImpl implements IPostService {
             postDto.setId(postDomain.getId());
             postDto.setTitle(postDomain.getTitle());
             postDto.setContent(postDomain.getContent());
-            postDto.setDatePost(postDomain.getDatePost());
+            postDto.setPublicationDate(postDomain.getPublicationDate());
             postDto.setContactNumber(postDomain.getContactNumber());
-            postDto.setLocation_coordinates(postDomain.getLocation_coordinates());
-            postDto.setSharedCouter(postDomain.getSharedCounter());
+            postDto.setLocationCoordinates(postDomain.getLocationCoordinates());
+            postDto.setSharedCounter(postDomain.getSharedCounter());
             postDto.setStatus(postDomain.getStatus());
 
             if (postDomain.getUser() != null && postDomain.getUser().getId() != null) {
@@ -124,7 +126,7 @@ public class PostServiceImpl implements IPostService {
             }
 
             if (postDomain.getPostType() != null && postDomain.getPostType().getId() != null) {
-                postDto.setId_post_type(postDomain.getPostType().getId());
+                postDto.setIdPostType(postDomain.getPostType().getId());
             } else {
                 throw new RuntimeException("Post Type ID is null or invalid");
             }
@@ -135,7 +137,8 @@ public class PostServiceImpl implements IPostService {
         return postDto;
     }
 
-    private PostDomain convertDtoToDomain(PostDto postDto) {
+    @Override
+    protected PostDomain convertDtoToDomain(PostDto postDto) {
         log.info("Converting PostDto to PostDomain");
 
         PostDomain postDomain = new PostDomain();
@@ -143,10 +146,10 @@ public class PostServiceImpl implements IPostService {
             postDomain.setId(postDto.getId());
             postDomain.setTitle(postDto.getTitle());
             postDomain.setContent(postDto.getContent());
-            postDomain.setDatePost(postDto.getDatePost());
+            postDomain.setPublicationDate(postDto.getPublicationDate());
             postDomain.setContactNumber(postDto.getContactNumber());
-            postDomain.setLocation_coordinates(postDto.getLocation_coordinates());
-            postDomain.setSharedCounter(postDto.getSharedCouter());
+            postDomain.setLocationCoordinates(postDto.getLocationCoordinates());
+            postDomain.setSharedCounter(postDto.getSharedCounter());
             postDomain.setStatus(postDto.getStatus());
 
             if (postDto.getId_user() != null) {
@@ -156,8 +159,8 @@ public class PostServiceImpl implements IPostService {
                 throw new RuntimeException("User ID cannot be null");
             }
 
-            if (postDto.getId_post_type() != null) {
-                PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getId_post_type())
+            if (postDto.getIdPostType() != null) {
+                PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getIdPostType())
                         .orElseThrow(() -> new RuntimeException("PostType not found"));
                 postDomain.setPostType(postTypeDomain);
             } else {

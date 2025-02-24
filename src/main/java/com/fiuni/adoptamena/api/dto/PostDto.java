@@ -25,16 +25,16 @@ public class PostDto implements Serializable {
 
     private String content;
 
-    private Integer id_post_type;
+    private Integer idPostType;
 
-    private String location_coordinates;
+    private String locationCoordinates;
 
     private String contactNumber;
 
     private String status;
 
-    private int sharedCouter;
+    private int sharedCounter;
 
-    private Date datePost;
+    private Date publicationDate;
 
 }

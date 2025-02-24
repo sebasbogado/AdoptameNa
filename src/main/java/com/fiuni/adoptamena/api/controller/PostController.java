@@ -1,7 +1,7 @@
 package com.fiuni.adoptamena.api.controller;
 
 import com.fiuni.adoptamena.api.dto.PostDto;
-import com.fiuni.adoptamena.api.service.IPostService;
+import com.fiuni.adoptamena.api.service.post.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
