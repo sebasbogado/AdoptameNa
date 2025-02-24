@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class PostServiceImpl implements IPostService{
+public class PostServiceImpl implements IPostService {
     private static final Logger log = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Autowired
@@ -34,14 +34,17 @@ public class PostServiceImpl implements IPostService{
 
     @Override
     public PostDto save(PostDto postDto) {
+        PostDto savedPostDto = null;
         try {
             PostDomain postDomain = convertDtoToDomain(postDto);
-            postDao.save(postDomain);
+            PostDomain savedPostDomain = postDao.save(postDomain);
             log.info("Post save successful");
-        }catch (Exception e){
+
+            savedPostDto = convertDomainToDto(savedPostDomain);
+        } catch (Exception e) {
             new ErrorResponse("Error creating post", e.getMessage());
         }
-        return postDto;
+        return savedPostDto;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class PostServiceImpl implements IPostService{
         try {
             postDto.setId(id);
             log.info("Post update successful");
-        }catch (Exception e){
+        } catch (Exception e) {
             new ErrorResponse("Error updating post", e.getMessage());
         }
         return save(postDto);
@@ -60,12 +63,11 @@ public class PostServiceImpl implements IPostService{
         log.info("Deleting post");
         try {
             PostDomain postDomain = postDao.findById(id).orElse(null);
-            if(postDomain != null){
+            if (postDomain != null) {
                 postDao.delete(postDomain);
                 log.info("Post delete successful");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             new ErrorResponse("Error deleting post", e.getMessage());
         }
     }
@@ -76,14 +78,12 @@ public class PostServiceImpl implements IPostService{
         PostDto postDto = null;
         try {
             Optional<PostDomain> postDomainOptional = postDao.findById(id);
-            if(postDomainOptional.isPresent()){
+            if (postDomainOptional.isPresent()) {
                 PostDomain postDomain = postDomainOptional.get();
-
                 postDto = convertDomainToDto(postDomain);
                 log.info("Post get successful");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             new ErrorResponse("Error getting post", e.getMessage());
         }
         return postDto;
@@ -94,23 +94,16 @@ public class PostServiceImpl implements IPostService{
         log.info("Getting all posts");
 
         if (title != null || content != null || userId != null || postTypeId != null) {
-
             Page<PostDomain> postPage = postDao.findByFilters(pageable, title, content, userId, postTypeId);
-
-
             return postPage.map(this::convertDomainToDto);
         }
 
-
         Page<PostDomain> postPage = postDao.findAll(pageable);
-
-
         return postPage.map(this::convertDomainToDto);
-
     }
 
     private PostDto convertDomainToDto(PostDomain postDomain) {
-        log.info("Converting PostDomain to postDto");
+        log.info("Converting PostDomain to PostDto");
 
         PostDto postDto = null;
         try {
@@ -123,22 +116,30 @@ public class PostServiceImpl implements IPostService{
             postDto.setLocation_coordinates(postDomain.getLocation_coordinates());
             postDto.setSharedCouter(postDomain.getSharedCounter());
             postDto.setStatus(postDomain.getStatus());
-            UserDomain userDomain = userDao.getById(postDto.getId_user());
-            postDto.setId_user(userDomain.getId());
-            PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getId_post_type()).get();
-            postDto.setId_post_type(postTypeDomain.getId());
 
-        }catch (Exception e){
-            new ErrorResponse("Error getting post", e.getMessage());
+            if (postDomain.getUser() != null && postDomain.getUser().getId() != null) {
+                postDto.setId_user(postDomain.getUser().getId());
+            } else {
+                throw new RuntimeException("User ID is null or invalid");
+            }
+
+            if (postDomain.getPostType() != null && postDomain.getPostType().getId() != null) {
+                postDto.setId_post_type(postDomain.getPostType().getId());
+            } else {
+                throw new RuntimeException("Post Type ID is null or invalid");
+            }
+        } catch (Exception e) {
+            log.error("Error converting PostDomain to PostDto", e);
+            new ErrorResponse("Error converting PostDomain to PostDto", e.getMessage());
         }
         return postDto;
     }
 
     private PostDomain convertDtoToDomain(PostDto postDto) {
-        log.info("Converting dto to domain");
-        PostDomain postDomain = null;
+        log.info("Converting PostDto to PostDomain");
+
+        PostDomain postDomain = new PostDomain();
         try {
-            postDomain = new PostDomain();
             postDomain.setId(postDto.getId());
             postDomain.setTitle(postDto.getTitle());
             postDomain.setContent(postDto.getContent());
@@ -147,13 +148,25 @@ public class PostServiceImpl implements IPostService{
             postDomain.setLocation_coordinates(postDto.getLocation_coordinates());
             postDomain.setSharedCounter(postDto.getSharedCouter());
             postDomain.setStatus(postDto.getStatus());
-            UserDomain userDomain = userDao.getById(postDto.getId_user());
-            postDomain.setUser(userDomain);
-            PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getId_post_type()).get();
-            postDomain.setPostType(postTypeDomain);
 
-        }catch (Exception e){
-            new ErrorResponse("Error converting dto to domain", e.getMessage());
+            if (postDto.getId_user() != null) {
+                UserDomain userDomain = userDao.getById(postDto.getId_user());
+                postDomain.setUser(userDomain);
+            } else {
+                throw new RuntimeException("User ID cannot be null");
+            }
+
+            if (postDto.getId_post_type() != null) {
+                PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getId_post_type())
+                        .orElseThrow(() -> new RuntimeException("PostType not found"));
+                postDomain.setPostType(postTypeDomain);
+            } else {
+                throw new RuntimeException("PostType ID cannot be null");
+            }
+
+        } catch (Exception e) {
+            log.error("Error converting PostDto to PostDomain", e);
+            new ErrorResponse("Error converting PostDto to PostDomain", e.getMessage());
         }
         return postDomain;
     }

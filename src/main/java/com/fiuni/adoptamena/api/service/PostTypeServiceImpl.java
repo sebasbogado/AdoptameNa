@@ -24,14 +24,18 @@ public class PostTypeServiceImpl implements IPostTypeService {
 
     @Override
     public PostTypeDto save(PostTypeDto postTypeDto) {
+
+        PostTypeDto savedPostTypeDto = null;
         try {
             PostTypeDomain postTypeDomain =  convertDtoToDomain(postTypeDto);
-            postTypeDao.save(postTypeDomain);
+            PostTypeDomain savedPostType = postTypeDao.save(postTypeDomain);
             log.info("PostType save successful");
+
+            savedPostTypeDto = convertDomainToDto(savedPostType);
         }catch (Exception e){
              new ErrorResponse("Error creating a Post Type", e.getMessage());
         }
-        return postTypeDto;
+        return savedPostTypeDto;
     }
 
     @Override
