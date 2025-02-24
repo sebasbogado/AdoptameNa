@@ -21,4 +21,6 @@ public class PostTypeDto implements Serializable {
     private String name;
 
     private String description;
+
+    private Boolean isDeleted;
 }

@@ -57,7 +57,9 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
         try {
             PostTypeDomain postTypeDomain = postTypeDao.findById(id).orElse(null);
             if (postTypeDomain != null) {
-                postTypeDao.delete(postTypeDomain);
+                //postTypeDao.delete(postTypeDomain);// descomentar para borrar en la base de datos
+                postTypeDomain.setIsDeleted(true);   // comentar para borrar en la base de datos
+                postTypeDao.save(postTypeDomain);    // comentar para borrar en la base de datos
                 log.info("PostType delete successful");
             }
         } catch (Exception e){
@@ -89,7 +91,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
         log.info("Get All PostType");
         if (name == null && description == null) {
 
-            Page<PostTypeDomain> postTypesPage = postTypeDao.findAll(pageable);
+            Page<PostTypeDomain> postTypesPage = postTypeDao.findAllAndIsDeletedFalse(pageable);
             return postTypesPage.map(this::convertDomainToDto);
         }
 

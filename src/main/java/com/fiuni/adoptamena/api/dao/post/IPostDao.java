@@ -14,5 +14,5 @@ public interface IPostDao extends CrudRepository<PostDomain, Integer> {
             "(COALESCE(:postTypeId, NULL) IS NULL OR p.postType.id = :postTypeId)")
     Page<PostDomain> findByFilters(Pageable pageable, String title, String content, Integer userId, Integer postTypeId);
 
-    Page<PostDomain> findAll(Pageable pageable);
+    Page<PostDomain> findAllAndIsDeletedFalse(Pageable pageable);
 }

@@ -65,7 +65,9 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
         try {
             PostDomain postDomain = postDao.findById(id).orElse(null);
             if (postDomain != null) {
-                postDao.delete(postDomain);
+                //postDao.delete(postDomain);  // descomentar para borrar en la base de datos
+                postDomain.setIsDeleted(true); // comentar para borrar en la base de datos
+                postDao.save(postDomain);      // comentar para borrar en la base de datos
                 log.info("Post delete successful");
             }
         } catch (Exception e) {
@@ -99,7 +101,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
             return postPage.map(this::convertDomainToDto);
         }
 
-        Page<PostDomain> postPage = postDao.findAll(pageable);
+        Page<PostDomain> postPage = postDao.findAllAndIsDeletedFalse(pageable);
         return postPage.map(this::convertDomainToDto);
     }
 
@@ -153,8 +155,14 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
             postDomain.setStatus(postDto.getStatus());
 
             if (postDto.getId_user() != null) {
-                UserDomain userDomain = userDao.getById(postDto.getId_user());
-                postDomain.setUser(userDomain);
+                UserDomain userDomain = userDao.findById(postDto.getId_user()).orElse(null);
+                //verificar si existe
+                if (userDomain != null) {
+                    postDomain.setUser(userDomain);
+                } else {
+                    throw new RuntimeException("User does not exist");
+                }
+
             } else {
                 throw new RuntimeException("User ID cannot be null");
             }

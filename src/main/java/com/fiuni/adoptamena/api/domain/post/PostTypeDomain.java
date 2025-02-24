@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 
 @Entity
-@Table(name= "postTypes")
+@Table(name= "post_types")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +20,7 @@ public class PostTypeDomain implements BaseDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_postType", nullable = false, unique = true )
+    @Column(name = "id_post_type", nullable = false, unique = true )
     private Integer id;
 
     @Column(name = "str_name", nullable = false )
@@ -28,4 +28,7 @@ public class PostTypeDomain implements BaseDomain {
 
     @Column(name = "str_description", nullable = false )
     private String description;
+
+    @Column(name = "boolean_deleted")
+    private Boolean isDeleted;
 }

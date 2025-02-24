@@ -37,7 +37,7 @@ public class PostDomain implements BaseDomain {
     private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "publication_date", nullable = false)
+    @Column(name = "date_publication_date", nullable = false)
     private Date publicationDate;
 
     @ManyToOne
@@ -54,7 +54,7 @@ public class PostDomain implements BaseDomain {
     private String status;
 
     @Column(name = "boolean_deleted")
-    private Boolean deleted;
+    private Boolean isDeleted;
 
     @Column(name = "int_shared_counter", nullable = false)
     private Integer sharedCounter;
