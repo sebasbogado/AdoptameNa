@@ -3,6 +3,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import java.io.Serial;
+import java.util.Date;
 
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 
@@ -45,7 +46,7 @@ public class ProfileDomain implements BaseDomain {
     private String gender;
 
     @Column(name="date_birthdate")
-    private String birthdate;
+    private Date birthdate;
 
     @Column(name="str_document")
     private String document;
