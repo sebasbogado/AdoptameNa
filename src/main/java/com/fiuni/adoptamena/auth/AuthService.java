@@ -3,6 +3,7 @@ package com.fiuni.adoptamena.auth;
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
+import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
@@ -41,6 +42,9 @@ public class AuthService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private IProfileService profileService;
 
     public AuthResponse login(LoginRequest request) {
         try {
@@ -92,7 +96,8 @@ public class AuthService {
             log.error("Error al guardar usuario", e);
             throw new RuntimeException("Error al guardar usuario");
         }
-
+        //Create profile
+        profileService.saveProfile(user.getId());
         // Crear la respuesta
         AuthResponse authResponse = new AuthResponse();
         authResponse.setToken(jwtService.getToken(user));
