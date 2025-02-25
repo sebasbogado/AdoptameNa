@@ -1,14 +1,12 @@
 package com.fiuni.adoptamena.api.dto.profile;
 
+import com.fiuni.adoptamena.api.domain.profile.EnumGender;
 import com.fiuni.adoptamena.api.dto.base.BaseDTO;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+
+import lombok.*;
 
 import java.util.Date;
-@Getter
-@Setter
-@ToString
+@Data
 public class ProfileDTO extends BaseDTO {
     private static final long serialVersionUID = 1L;
 
@@ -17,7 +15,7 @@ public class ProfileDTO extends BaseDTO {
     private String lastName;
     private String address;
     private String description;
-    private String gender;
+    private EnumGender gender;
     private Date birthdate;
     private String document;
     private String phoneNumber;

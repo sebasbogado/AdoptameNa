@@ -44,7 +44,7 @@ public class ProfileDomain implements BaseDomain {
     private String description;
 
     @Column(name="str_gender")
-    private String gender;
+    private EnumGender gender;
 
     @Column(name="date_birthdate")
     private Date birthdate;
