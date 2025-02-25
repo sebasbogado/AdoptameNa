@@ -31,7 +31,7 @@ public class ProfileServiceImpl implements IProfileService {
         domain.setDocument(dto.getDocument());
         domain.setPhoneNumber(dto.getPhoneNumber());
         domain.setEarnedPoints(dto.getEarnedPoints());
-        domain.setDeleted(dto.getBoolDeleted());
+        domain.setIsDeleted(dto.getIsDeleted());
         return domain;
     }
     //domain to dto
@@ -48,7 +48,7 @@ public class ProfileServiceImpl implements IProfileService {
         dto.setDocument(domain.getDocument());
         dto.setPhoneNumber(domain.getPhoneNumber());
         dto.setEarnedPoints(domain.getEarnedPoints());
-        dto.setBoolDeleted(domain.getDeleted());
+        dto.setIsDeleted(domain.getIsDeleted());
         return dto;
     }
 
