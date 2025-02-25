@@ -9,6 +9,7 @@ import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.PostDto;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
+import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,13 +125,13 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
             if (postDomain.getUser() != null && postDomain.getUser().getId() != null) {
                 postDto.setId_user(postDomain.getUser().getId());
             } else {
-                throw new RuntimeException("User ID is null or invalid");
+                throw new ResourceNotFoundException("User not found");
             }
 
             if (postDomain.getPostType() != null && postDomain.getPostType().getId() != null) {
                 postDto.setIdPostType(postDomain.getPostType().getId());
             } else {
-                throw new RuntimeException("Post Type ID is null or invalid");
+                throw new ResourceNotFoundException("Post Type ID is null or invalid");
             }
         } catch (Exception e) {
             log.error("Error converting PostDomain to PostDto", e);
@@ -160,11 +161,11 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
                 if (userDomain != null) {
                     postDomain.setUser(userDomain);
                 } else {
-                    throw new RuntimeException("User does not exist");
+                    throw new ResourceNotFoundException("User not found");
                 }
 
             } else {
-                throw new RuntimeException("User ID cannot be null");
+                throw new ResourceNotFoundException("Post Type ID is null or invalid");
             }
 
             if (postDto.getIdPostType() != null) {
@@ -172,7 +173,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
                         .orElseThrow(() -> new RuntimeException("PostType not found"));
                 postDomain.setPostType(postTypeDomain);
             } else {
-                throw new RuntimeException("PostType ID cannot be null");
+                throw new ResourceNotFoundException("Post Type ID is null or invalid");
             }
 
         } catch (Exception e) {
