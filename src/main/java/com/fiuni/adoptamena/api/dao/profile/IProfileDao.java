@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 @Repository
 public interface IProfileDao extends JpaRepository<ProfileDomain, Integer> {
-    Optional<ProfileDomain> findByIdAndDeletedFalse(Integer id);
+    Optional<ProfileDomain> findByIdAndIsDeletedFalse(Integer id);
 }
