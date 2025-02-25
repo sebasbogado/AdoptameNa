@@ -113,6 +113,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
 
         }
         catch (Exception e){
+            log.info("Error converting PostTypeDomain to PostTypeDto");
             new ErrorResponse("Error converting PostTypeDomain to PostTypeDto", e.getMessage());
         }
         return postTypeDto;
@@ -130,6 +131,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
             postTypeDomain.setDescription(postTypeDto.getDescription());
         }
         catch (Exception e){
+            log.info("Error converting PostTypeDto to PostTypeDomain");
             new ErrorResponse("Error converting PostTypeDto to PostTypeDomain", e.getMessage());
         }
         return postTypeDomain;
