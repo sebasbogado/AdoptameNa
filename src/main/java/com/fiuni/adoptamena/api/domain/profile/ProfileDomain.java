@@ -12,6 +12,7 @@ import com.fiuni.adoptamena.api.domain.user.UserDomain;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ProfileDomain implements BaseDomain {
     
     @Serial
