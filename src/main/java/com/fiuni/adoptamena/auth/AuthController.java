@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @Autowired
     private final AuthService authService;
 
     @Autowired
@@ -48,21 +49,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request));
     }
 
-    @PostMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
-        // Obtener el token de verificación
-        VerificationTokenDomain verificationToken = verificationTokenService.getVerificationToken(token);
-
-        // Verificar si el token está asociado a un usuario
-        UserDomain user = verificationToken.getUser();
-
-        // Marcar al usuario como verificado
-        user.setVerified(true);
-        userDao.save(user);
-
-        // Eliminar el token de la base de datos
-        verificationTokenService.deleteToken(user);
-
-        return ResponseEntity.ok("Cuenta verificada con éxito. Ahora puedes iniciar sesión.");
+    @GetMapping("/verify-email")
+    public ResponseEntity<AuthResponse> verifyEmail(@RequestParam("token") String token) {
+        return ResponseEntity.ok(authService.verifyEmail(token));
     }
+
 }

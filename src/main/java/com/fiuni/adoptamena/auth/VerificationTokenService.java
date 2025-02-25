@@ -4,12 +4,11 @@ import com.fiuni.adoptamena.api.dao.user.IVerificationTokenDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.domain.user.VerificationTokenDomain;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,11 @@ public class VerificationTokenService {
                 .orElseThrow(() -> new BadRequestException("Token de verificación inválido o expirado."));
     }
 
+    @Transactional
     public void deleteToken(UserDomain user) {
-        verificationTokenDao.deleteByUserId(user.getId());
+        VerificationTokenDomain token = verificationTokenDao.findByUser(user);
+        if (token != null) {
+            verificationTokenDao.delete(token);
+        }
     }
 }
