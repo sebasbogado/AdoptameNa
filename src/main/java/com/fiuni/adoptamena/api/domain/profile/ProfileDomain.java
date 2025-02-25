@@ -58,7 +58,7 @@ public class ProfileDomain implements BaseDomain {
     private int earnedPoints;
 
     @Column(name = "bool_deleted")
-    private Boolean deleted;
+    private Boolean isDeleted;
 
     @Column(name="str_address_coordinates")
     private String addressCoordinates;

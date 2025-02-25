@@ -46,7 +46,7 @@ public class UserDomain implements BaseDomain, UserDetails {
     private ProfileDomain profile;
 
     @Column(name = "bool_deleted", nullable = false)
-    private Boolean deleted;
+    private Boolean isDeleted;
 
     // UserDetails methods
     @Override
