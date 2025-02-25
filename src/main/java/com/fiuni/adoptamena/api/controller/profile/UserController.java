@@ -20,12 +20,6 @@ public class UserController {
     public String getOk() {
         return "OK";
     }
-    @PostMapping("/{id}/profile")
-    public ResponseEntity<ProfileDTO> postMethodName(@RequestBody ProfileDTO profile, @PathVariable Integer id) {
-        log.info("Llega al controller, {}", profile);
-        ProfileDTO result = profileService.saveProfile(profile, id);
-        return new ResponseEntity<>(result,HttpStatus.CREATED);
-    }
     @GetMapping("/{id}/profile")
     public ResponseEntity<ProfileDTO> getMethodName(@PathVariable Integer id) {
         ProfileDTO result = profileService.getById(id);
