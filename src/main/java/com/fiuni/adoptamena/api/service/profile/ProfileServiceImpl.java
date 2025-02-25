@@ -57,33 +57,38 @@ public class ProfileServiceImpl implements IProfileService {
             new ResourceNotFoundException("Perfil no encontrado"));
         return convertDomainToDTO(domain);
     }
-
-    public ProfileDTO saveProfile(ProfileDTO profile, Integer userId) {
-        log.info("ACA - Creando perfil {} ",profile);
-        ProfileDomain domain = convertDtoToDomain(profile);
+    public void saveProfile(Integer userId) {
+        log.info("Creando perfil {}");
+        ProfileDomain domain = new ProfileDomain();
         domain.setUser(userDao.findById(userId).orElseThrow(()-> 
             new ResourceNotFoundException("Usuario no encontrado")));
-        //TODO: funcion para setear atributos de domain
-        //TODO: mejorar DTO, no pedir isDeleted, earnedPoints
+
         setDefaultAttributes(domain);
         log.info("Usuario a guardar, {}", domain);
-        ProfileDomain profileDomainSaved = profileDao.save(domain);
-        return convertDomainToDTO(profileDomainSaved);
+        profileDao.save(domain);
+        return;
     }
-
+    //IN-PROGRESS
     public ProfileDTO updateProfile(ProfileDTO profile) {
         final ProfileDomain profileDomain = convertDtoToDomain(profile);
         final ProfileDomain profileDomainSaved = profileDao.save(profileDomain);
         return convertDomainToDTO(profileDomainSaved);
     }
-
-    public void deleteProfile(Integer id) {
-        profileDao.deleteById(id);
-    }
+    //delete when user is deleted
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
-        domain.setIsDeleted(false);
+        domain.setName(domain.getUser().getEmail());
+        domain.setOrganizationName(null);
+        domain.setLastName(null);
+        domain.setAddress(null);
+        domain.setDescription(null);
+        domain.setBirthdate(null);
+        domain.setGender(null);
+        domain.setDocument(null);
+        domain.setPhoneNumber(null);
         domain.setEarnedPoints(0);
+        domain.setIsDeleted(false);
+        domain.setAddressCoordinates(null);
         return domain;
     }
 }
