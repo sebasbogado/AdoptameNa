@@ -23,5 +23,5 @@ public class ProfileDTO extends BaseDTO {
     private String phoneNumber;
     private int earnedPoints;
     private Boolean isDeleted;
-    private String addressCoordiantes;
+    private String addressCoordinates;
 }
