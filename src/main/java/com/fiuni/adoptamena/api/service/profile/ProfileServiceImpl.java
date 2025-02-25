@@ -1,13 +1,13 @@
 package com.fiuni.adoptamena.api.service.profile;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.fiuni.adoptamena.api.dao.profile.IProfileDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.profile.*;
-import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
+import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
 
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -51,22 +51,23 @@ public class ProfileServiceImpl implements IProfileService {
         dto.setIsDeleted(domain.getIsDeleted());
         return dto;
     }
-
+    
     public ProfileDTO getById(Integer id) {
-        return convertDomainToDTO(profileDao.findByIdAndDeletedFalse(id).orElse(null));
+        ProfileDomain domain = profileDao.findById(id).orElseThrow(()-> 
+            new ResourceNotFoundException("Perfil no encontrado"));
+        return convertDomainToDTO(domain);
     }
 
     public ProfileDTO saveProfile(ProfileDTO profile, Integer userId) {
         log.info("ACA - Creando perfil {} ",profile);
-        System.out.println("llega acaaaa");
-        UserDomain user = userDao.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        profile.setId(userId);
-        ProfileDomain profileDomain = convertDtoToDomain(profile);
-        profileDomain.setUser(user); 
-
-        ProfileDomain profileDomainSaved = profileDao.save(profileDomain);
+        ProfileDomain domain = convertDtoToDomain(profile);
+        domain.setUser(userDao.findById(userId).orElseThrow(()-> 
+            new ResourceNotFoundException("Usuario no encontrado")));
+        //TODO: funcion para setear atributos de domain
+        //TODO: mejorar DTO, no pedir isDeleted, earnedPoints
+        setDefaultAttributes(domain);
+        log.info("Usuario a guardar, {}", domain);
+        ProfileDomain profileDomainSaved = profileDao.save(domain);
         return convertDomainToDTO(profileDomainSaved);
     }
 
@@ -78,5 +79,11 @@ public class ProfileServiceImpl implements IProfileService {
 
     public void deleteProfile(Integer id) {
         profileDao.deleteById(id);
+    }
+
+    private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
+        domain.setIsDeleted(false);
+        domain.setEarnedPoints(0);
+        return domain;
     }
 }
