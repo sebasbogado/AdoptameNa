@@ -101,7 +101,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
             return postPage.map(this::convertDomainToDto);
         }
 
-        Page<PostDomain> postPage = postDao.findAllAndIsDeletedFalse(pageable);
+        Page<PostDomain> postPage = postDao.findAllByIsDeletedFalse(pageable);
         return postPage.map(this::convertDomainToDto);
     }
 

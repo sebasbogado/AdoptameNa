@@ -91,7 +91,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
         log.info("Get All PostType");
         if (name == null && description == null) {
 
-            Page<PostTypeDomain> postTypesPage = postTypeDao.findAllAndIsDeletedFalse(pageable);
+            Page<PostTypeDomain> postTypesPage = postTypeDao.findAllByIsDeletedFalse(pageable);
             return postTypesPage.map(this::convertDomainToDto);
         }
 
