@@ -25,5 +25,10 @@ public class UserController {
         ProfileDTO result = profileService.getById(id);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-    
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<ProfileDTO> updateMethodName(@PathVariable Integer id, @RequestBody ProfileDTO profile) {
+        log.info("llega a controller");
+        ProfileDTO result = profileService.updateProfile(id, profile);
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
 }

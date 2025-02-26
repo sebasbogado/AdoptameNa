@@ -5,7 +5,7 @@ public interface IProfileService {
     //save
     void saveProfile(Integer userId);
     //update
-    ProfileDTO updateProfile(ProfileDTO profile);
+    ProfileDTO updateProfile(Integer id, ProfileDTO profile);
     //get by id
     ProfileDTO getById(Integer id);
 }

@@ -4,10 +4,12 @@ import com.fiuni.adoptamena.api.dao.profile.IProfileDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.profile.*;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
-import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
+import com.fiuni.adoptamena.exception_handler.exceptions.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -68,10 +70,17 @@ public class ProfileServiceImpl implements IProfileService {
         profileDao.save(domain);
         return;
     }
-    //IN-PROGRESS
-    public ProfileDTO updateProfile(ProfileDTO profile) {
-        final ProfileDomain profileDomain = convertDtoToDomain(profile);
-        final ProfileDomain profileDomainSaved = profileDao.save(profileDomain);
+    
+    public ProfileDTO updateProfile(Integer id, ProfileDTO profile) {
+        //validate user exists
+        ProfileDomain existingProfile = profileDao.findById(id).orElseThrow(()-> 
+            new ResourceNotFoundException("Perfil no encontrado"));
+        validateGender(profile.getGender().name());
+        //validate user exists
+        ProfileDomain profileDomain = convertDtoToDomain(profile);
+
+        profileDomain.setId(id);
+        ProfileDomain profileDomainSaved = profileDao.save(profileDomain);
         return convertDomainToDTO(profileDomainSaved);
     }
     //delete when user is deleted
@@ -90,5 +99,15 @@ public class ProfileServiceImpl implements IProfileService {
         domain.setIsDeleted(false);
         domain.setAddressCoordinates(null);
         return domain;
+    }
+    private void validateGender(String gender) {
+        if(gender == null) {
+            return;
+        }
+        try {
+            EnumGender.valueOf(gender.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(gender + " no es un género válido");    
+        }
     }
 }
