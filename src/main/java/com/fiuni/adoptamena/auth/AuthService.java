@@ -3,7 +3,6 @@ package com.fiuni.adoptamena.auth;
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
-import com.fiuni.adoptamena.api.domain.user.VerificationTokenDomain;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
