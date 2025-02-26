@@ -46,10 +46,10 @@ public class UserDomain implements BaseDomain, UserDetails {
     private Profile profile;
 
     @Column(name = "bool_verified", nullable = false)
-    private Boolean verified;
+    private Boolean isVerified;
 
     @Column(name = "bool_deleted", nullable = false)
-    private Boolean deleted;
+    private Boolean isDeleted;
 
     // UserDetails methods
     @Override

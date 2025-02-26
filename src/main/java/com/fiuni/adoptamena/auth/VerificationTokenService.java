@@ -1,24 +1,35 @@
 package com.fiuni.adoptamena.auth;
 
 import com.fiuni.adoptamena.api.dao.user.IVerificationTokenDao;
+import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.domain.user.VerificationTokenDomain;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
+import com.fiuni.adoptamena.utils.EmailService;
+
 import java.util.Date;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VerificationTokenService {
 
     @Autowired
     private final IVerificationTokenDao verificationTokenDao;
+
+    @Autowired
+    private final IUserDao userDao;
+
+    @Autowired
+    private final EmailService emailService;
 
     // Crear un nuevo token de verificación y guardarlo en la base de datos
     @Transactional
@@ -64,13 +75,44 @@ public class VerificationTokenService {
         UserDomain user = verificationToken.getUser();
 
         // Marcar el usuario como verificado
-        user.setVerified(true);
+        user.setIsVerified(true);
 
         // Eliminar el token de la base de datos para evitar reutilización
         verificationTokenDao.delete(verificationToken);
 
         // Retornar respuesta exitosa
         return new AuthResponse("Email verificado correctamente.");
+    }
+
+    // Eliminar token de verificación y enviar uno nuevo al usuario
+    public AuthResponse resendVerificationToken(String email) {
+        log.info("Iniciando proceso de reenvío de token para el email: {}", email);
+
+        // Verificar si el usuario existe y no está eliminado
+        UserDomain user = userDao.findByEmail(email)
+                .filter(u -> !u.getIsDeleted())
+                .orElseThrow(() -> {
+                    log.warn("Intento de reenvío de token a un usuario inexistente o eliminado: {}", email);
+                    return new BadRequestException("El usuario no existe.");
+                });
+
+        // Verificar si el usuario ya está verificado
+        if (user.getIsVerified()) {
+            log.warn("El usuario {} ya está verificado. No se enviará un nuevo token.", email);
+            throw new BadRequestException("El usuario ya está verificado.");
+        }
+
+        log.info("Eliminando token de verificación anterior para el usuario: {}", email);
+        deleteToken(user);
+
+        log.info("Generando nuevo token de verificación para el usuario: {}", email);
+        String newToken = createVerificationToken(user);
+
+        log.info("Enviando nuevo token de verificación al email: {}", email);
+        emailService.sendVerificationEmail(newToken, user.getEmail());
+
+        log.info("Token reenviado correctamente al usuario: {}", email);
+        return new AuthResponse("Token de verificación reenviado correctamente.");
     }
 
 }

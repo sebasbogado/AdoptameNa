@@ -46,4 +46,10 @@ public class AuthController {
         return ResponseEntity.ok(verificationTokenService.verifyEmail(token));
     }
 
+    // Generar token nuevamente
+    @PostMapping("/resend-verification-token")
+    public ResponseEntity<AuthResponse> resendVerificationToken(@RequestParam("email") String email) {
+        return ResponseEntity.ok(verificationTokenService.resendVerificationToken(email));
+    }
+
 }

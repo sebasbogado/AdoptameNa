@@ -79,8 +79,8 @@ public class AuthService {
         user.setRole(roleDao.findByName("user")
                 .orElseThrow(() -> new RuntimeException("Role not found")));
 
-        user.setDeleted(false);
-        user.setVerified(false);
+        user.setIsDeleted(false);
+        user.setIsVerified(false);
         user.setCreationDate(new Date());
 
         // Guardar el usuario
