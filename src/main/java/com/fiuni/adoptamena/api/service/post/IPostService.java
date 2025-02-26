@@ -10,4 +10,8 @@ public interface IPostService extends IBaseService<PostDomain, PostDto> {
 
 
     Page<PostDto> getAllPosts(Pageable pageable, String title, String content, Integer userId, Integer postTypeId);
+
+    Page<PostDto> searchPostByKeyword(Pageable pageable, String keyword);
+
+    void increaseSharedCounter(Integer postId);
 }

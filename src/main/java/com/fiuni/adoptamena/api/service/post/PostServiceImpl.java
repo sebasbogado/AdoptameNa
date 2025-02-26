@@ -107,6 +107,26 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
     }
 
     @Override
+    public Page<PostDto> searchPostByKeyword(Pageable pageable, String keyword) {
+        log.info("Searching posts by keyword: {}", keyword);
+
+        Page<PostDomain> postPage = postDao.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
+
+        return postPage.map(this::convertDomainToDto);
+    }
+
+    @Override
+    public void increaseSharedCounter(Integer postId) {
+
+        PostDomain postDomain = postDao.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        postDomain.setSharedCounter(postDomain.getSharedCounter() + 1);
+
+        postDao.save(postDomain);
+    }
+
+
+    @Override
     protected PostDto convertDomainToDto(PostDomain postDomain) {
         log.info("Converting PostDomain to PostDto");
 
