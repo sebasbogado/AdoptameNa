@@ -56,6 +56,7 @@ public class VerificationTokenService {
         }
         // Verificar si el token ha expirado
         if (verificationToken.getExpiryDate().before(new Date())) {
+            deleteToken(verificationToken.getUser());
             throw new GoneException("El token de verificación ha expirado. Solicita uno nuevo.");
         }
 
