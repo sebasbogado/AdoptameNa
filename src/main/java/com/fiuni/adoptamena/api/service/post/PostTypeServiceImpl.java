@@ -21,7 +21,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
 
     private static final Logger log = LoggerFactory.getLogger(PostTypeServiceImpl.class);
     @Autowired
-    IPostTypeDao postTypeDao;
+    private IPostTypeDao postTypeDao;
 
     @Override
     public PostTypeDto save(PostTypeDto postTypeDto) {
