@@ -1,6 +1,7 @@
 package com.fiuni.adoptamena.auth;
 
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -44,4 +45,5 @@ public class AuthController {
     public ResponseEntity<AuthResponse> verifyEmail(@RequestParam("token") String token) {
         return ResponseEntity.ok(verificationTokenService.verifyEmail(token));
     }
+
 }
