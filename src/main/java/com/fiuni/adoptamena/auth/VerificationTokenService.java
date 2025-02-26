@@ -1,13 +1,17 @@
 package com.fiuni.adoptamena.auth;
 
-import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.dao.user.IVerificationTokenDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.domain.user.VerificationTokenDomain;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
+import java.util.Date;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +22,8 @@ public class VerificationTokenService {
     @Autowired
     private final IVerificationTokenDao verificationTokenDao;
 
-    @Autowired
-    private final IUserDao userDao;
-
+    // Crear un nuevo token de verificación y guardarlo en la base de datos
+    @Transactional
     public String createVerificationToken(UserDomain user) {
         // Generar un nuevo token y guardarlo en la BD
         VerificationTokenDomain token = new VerificationTokenDomain(user);
@@ -28,11 +31,13 @@ public class VerificationTokenService {
         return token.getToken();
     }
 
+    // Obtener el token de verificación desde la base de datos
     public VerificationTokenDomain getVerificationToken(String token) {
         return verificationTokenDao.findByToken(token)
                 .orElseThrow(() -> new BadRequestException("Token de verificación inválido o expirado."));
     }
 
+    // Eliminar el token de verificación de la base de datos
     @Transactional
     public void deleteToken(UserDomain user) {
         VerificationTokenDomain token = verificationTokenDao.findByUser(user);
@@ -41,24 +46,32 @@ public class VerificationTokenService {
         }
     }
 
+    // Verificar el token de verificación y marcar al usuario como verificado
+    @Transactional
     public AuthResponse verifyEmail(String token) {
-        // Obtener el token de verificación
+        // Obtener el token de verificación desde la base de datos
         VerificationTokenDomain verificationToken = getVerificationToken(token);
 
-        //TODO: Verificar si el token ya expiro
+        // Verificar si el token existe
+        if (verificationToken == null) {
+            throw new GoneException("El token de verificación no existe o ya ha sido utilizado.");
+        }
+        // Verificar si el token ha expirado
+        if (verificationToken.getExpiryDate().before(new Date())) {
+            throw new GoneException("El token de verificación ha expirado. Solicita uno nuevo.");
+        }
 
-        // Verificar si el token está asociado a un usuario
+        // Obtener el usuario asociado al token
         UserDomain user = verificationToken.getUser();
 
-        // Marcar al usuario como verificado
+        // Marcar el usuario como verificado
         user.setVerified(true);
-        userDao.save(user);
 
-        // Eliminar el token de la base de datos
-        deleteToken(user);
+        // Eliminar el token de la base de datos para evitar reutilización
+        verificationTokenDao.delete(verificationToken);
 
-        return AuthResponse.builder()
-                .token("Cuenta verificada con éxito. Ahora puedes iniciar sesión.")
-                .build();
+        // Retornar respuesta exitosa
+        return new AuthResponse("Email verificado correctamente.");
     }
+
 }
