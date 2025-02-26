@@ -62,7 +62,7 @@ public class ProfileServiceImpl implements IProfileService {
     public void saveProfile(Integer userId) {
         log.info("Creando perfil {}");
         ProfileDomain domain = new ProfileDomain();
-        domain.setUser(userDao.findById(userId).orElseThrow(()-> 
+        domain.setUser(userDao.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> 
             new ResourceNotFoundException("Usuario no encontrado")));
 
         setDefaultAttributes(domain);
