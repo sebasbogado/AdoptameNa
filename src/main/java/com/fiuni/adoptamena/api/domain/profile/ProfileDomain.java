@@ -3,6 +3,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import java.io.Serial;
+import java.util.Date;
 
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 
@@ -11,7 +12,8 @@ import com.fiuni.adoptamena.api.domain.user.UserDomain;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Profile implements BaseDomain {
+@ToString
+public class ProfileDomain implements BaseDomain {
     
     @Serial
     private static final long serialVersionUID = 1L;
@@ -29,11 +31,8 @@ public class Profile implements BaseDomain {
     @Column(name="str_organization_name")
     private String organizationName;
 
-    @Column(name="str_name")
-    private String name;
-
-    @Column(name="str_last_name")
-    private String lastName;
+    @Column(name="str_full_name")
+    private String fullName;
 
     @Column(name="str_address")
     private String address;
@@ -42,10 +41,10 @@ public class Profile implements BaseDomain {
     private String description;
 
     @Column(name="str_gender")
-    private String gender;
+    private EnumGender gender;
 
     @Column(name="date_birthdate")
-    private String birthdate;
+    private Date birthdate;
 
     @Column(name="str_document")
     private String document;
@@ -57,7 +56,7 @@ public class Profile implements BaseDomain {
     private int earnedPoints;
 
     @Column(name = "bool_deleted")
-    private Boolean boolDeleted;
+    private Boolean isDeleted;
 
     @Column(name="str_address_coordinates")
     private String addressCoordinates;

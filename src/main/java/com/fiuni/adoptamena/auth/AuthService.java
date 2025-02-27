@@ -3,6 +3,8 @@ package com.fiuni.adoptamena.auth;
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
+import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
+import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
@@ -42,6 +44,9 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private IProfileService profileService;
+
     public AuthResponse login(LoginRequest request) {
         try {
             authenticationManager.authenticate(
@@ -76,7 +81,7 @@ public class AuthService {
         user.setRole(roleDao.findByName(request.getRole().toLowerCase())
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.getRole())));
 
-        user.setDeleted(false);
+        user.setIsDeleted(false);
         user.setCreationDate(new Date());
 
         // Guardar el usuario
@@ -92,7 +97,11 @@ public class AuthService {
             log.error("Error al guardar usuario", e);
             throw new RuntimeException("Error al guardar usuario");
         }
+        //Create profile
+        ProfileDTO profile = new ProfileDTO();
+        profile.setId(user.getId());
 
+        profileService.save(profile);
         // Crear la respuesta
         AuthResponse authResponse = new AuthResponse();
         authResponse.setToken(jwtService.getToken(user));
