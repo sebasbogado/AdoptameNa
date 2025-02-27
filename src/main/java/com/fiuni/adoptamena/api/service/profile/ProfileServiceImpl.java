@@ -3,6 +3,7 @@ package com.fiuni.adoptamena.api.service.profile;
 import com.fiuni.adoptamena.api.dao.profile.IProfileDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.profile.*;
+import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.exceptions.*;
@@ -97,8 +98,17 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     @Override
     public void deleteById(int id) {
         ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
-            new ResourceNotFoundException("Perfil no encontrado"));
+        new ResourceNotFoundException("Perfil no encontrado"));
+        
+        //delete profile
         domain.setIsDeleted(true);
+        
+        UserDomain user = userDao.findByIdAndIsDeletedFalse(domain.getUser().getId()).orElseThrow(()-> 
+            new ResourceNotFoundException("Usuario no encontrado"));
+        //delete user
+        user.setIsDeleted(true);
+        //save
+        userDao.save(user);
         profileDao.save(domain);
         log.info("Perfil eliminado {}", domain);
     }
