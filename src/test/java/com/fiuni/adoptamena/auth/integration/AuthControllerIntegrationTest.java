@@ -1,8 +1,8 @@
 package com.fiuni.adoptamena.auth.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiuni.adoptamena.auth.LoginRequest;
-import com.fiuni.adoptamena.auth.RegisterRequest;
+import com.fiuni.adoptamena.auth.response.LoginRequest;
+import com.fiuni.adoptamena.auth.response.RegisterRequest;
 
 import jakarta.transaction.Transactional;
 
@@ -39,7 +39,7 @@ class AuthControllerIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(registerRequest)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.token").exists());
+                                .andExpect(jsonPath("$.message").exists());
 
                 LoginRequest loginRequest = new LoginRequest(email, password);
                 mockMvc.perform(post("/auth/login")

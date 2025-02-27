@@ -23,10 +23,11 @@ import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.RoleDomain;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
-import com.fiuni.adoptamena.auth.AuthResponse;
-import com.fiuni.adoptamena.auth.AuthService;
-import com.fiuni.adoptamena.auth.LoginRequest;
-import com.fiuni.adoptamena.auth.RegisterRequest;
+import com.fiuni.adoptamena.auth.response.AuthResponse;
+import com.fiuni.adoptamena.auth.response.GenericResponse;
+import com.fiuni.adoptamena.auth.response.LoginRequest;
+import com.fiuni.adoptamena.auth.response.RegisterRequest;
+import com.fiuni.adoptamena.auth.service.AuthService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
@@ -96,10 +97,11 @@ class AuthServiceTest {
         when(jwtService.getToken(any(UserDetails.class))).thenReturn("token");
         when(userDao.save(any(UserDomain.class))).thenAnswer(i -> i.getArgument(0));
 
-        AuthResponse response = authService.register(request);
+        GenericResponse response = authService.register(request, false);
 
         assertNotNull(response);
-        assertEquals("token", response.getToken());
+        assertEquals("Usuario registrado exitosamente. Revisa tu email para verificar tu cuenta.",
+                response.getMessage());
 
         ArgumentCaptor<UserDomain> userCaptor = ArgumentCaptor.forClass(UserDomain.class);
         verify(userDao).save(userCaptor.capture());
@@ -121,10 +123,11 @@ class AuthServiceTest {
         when(jwtService.getToken(any(UserDetails.class))).thenReturn("token");
         when(userDao.save(any(UserDomain.class))).thenAnswer(i -> i.getArgument(0));
 
-        AuthResponse response = authService.register(request);
+        GenericResponse response = authService.register(request, false);
 
         assertNotNull(response);
-        assertEquals("token", response.getToken());
+        assertEquals("Usuario registrado exitosamente. Revisa tu email para verificar tu cuenta.",
+                response.getMessage());
 
         ArgumentCaptor<UserDomain> userCaptor = ArgumentCaptor.forClass(UserDomain.class);
         verify(userDao).save(userCaptor.capture());
@@ -140,7 +143,7 @@ class AuthServiceTest {
         RegisterRequest request = new RegisterRequest("test@example.com", "password", "Unknown");
 
         assertThrows(BadRequestException.class, () -> {
-            authService.register(request);
+            authService.register(request, false);
         });
 
         verify(userDao, never()).save(any(UserDomain.class));

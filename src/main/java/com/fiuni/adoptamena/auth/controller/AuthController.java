@@ -29,6 +29,8 @@ public class AuthController {
     @Autowired
     private final VerificationTokenService verificationTokenService;
 
+    private final Boolean sendEmail = true;
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request,
@@ -46,7 +48,7 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException("Invalid registration request");
         }
-        return ResponseEntity.ok(authService.register(request));
+        return ResponseEntity.ok(authService.register(request, sendEmail));
     }
 
     @GetMapping("/verify-email")

@@ -64,7 +64,7 @@ public class AuthService {
             throw new BadCredentialsException("Email o contraseña incorrectos.", e);
         }
 
-        UserDetails user = userDao.findByEmailAndIsDeletedFalse(request.getEmail())
+        UserDetails user = userDao.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado con el email: " + request.getEmail()));
 
@@ -74,7 +74,7 @@ public class AuthService {
                 .build();
     }
 
-    public GenericResponse register(RegisterRequest request) {
+    public GenericResponse register(RegisterRequest request, boolean sendEmail) {
         // Validar el role
         if (!("USER".equalsIgnoreCase(request.getRole()) || "ORGANIZATION".equalsIgnoreCase(request.getRole()))) {
             throw new BadRequestException("Rol inválido. Debe ser 'USER' o 'ORGANIZATION'");
@@ -108,13 +108,15 @@ public class AuthService {
             throw new RuntimeException("Error al guardar usuario");
         }
 
-        // Create profile
+        // Crear perfil
         ProfileDTO profile = new ProfileDTO();
         profile.setId(user.getId());
         profileService.save(profile);
 
-        // Crear un token de verificación y enviarlo por email
-        verificationTokenService.sendVerificationEmail(user.getEmail());
+        // Enviar email de verificación solo si sendEmail es true
+        if (sendEmail) {
+            verificationTokenService.sendVerificationEmail(user.getEmail());
+        }
 
         // Responder con un mensaje de éxito
         return GenericResponse.builder()
