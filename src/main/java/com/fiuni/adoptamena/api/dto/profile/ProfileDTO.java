@@ -12,7 +12,6 @@ public class ProfileDTO extends BaseDTO {
 
     private String organizationName;
     private String name;
-    private String lastName;
     private String address;
     private String description;
     private EnumGender gender;

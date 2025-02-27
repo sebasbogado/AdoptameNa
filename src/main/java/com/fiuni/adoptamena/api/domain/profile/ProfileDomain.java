@@ -31,11 +31,8 @@ public class ProfileDomain implements BaseDomain {
     @Column(name="str_organization_name")
     private String organizationName;
 
-    @Column(name="str_name")
+    @Column(name="str_full_name")
     private String name;
-
-    @Column(name="str_last_name")
-    private String lastName;
 
     @Column(name="str_address")
     private String address;
