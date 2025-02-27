@@ -62,7 +62,7 @@ public class AuthService {
             throw new BadCredentialsException("Email o contraseña incorrectos.", e);
         }
 
-        UserDetails user = userDao.findByEmailAndIsDeletedFalse(request.getEmail())
+        UserDetails user = userDao.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado con el email: " + request.getEmail()));
 
