@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface IPostTypeDao extends CrudRepository<PostTypeDomain, Integer> {
     Page<PostTypeDomain> findAllByIsDeletedFalse(Pageable pageable);
 
-    Page<PostTypeDomain> findByNameContainingAndDescriptionContainingAAndIsDeletedFalse(String name, String description, Pageable pageable);
+    Page<PostTypeDomain> findByNameContainingAndDescriptionContainingAndIsDeletedFalse(String name, String description, Pageable pageable);
 }

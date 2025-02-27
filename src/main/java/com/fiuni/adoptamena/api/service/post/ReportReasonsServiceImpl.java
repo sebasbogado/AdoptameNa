@@ -5,6 +5,7 @@ import com.fiuni.adoptamena.api.domain.post.ReportReasonsDomain;
 import com.fiuni.adoptamena.api.dto.post.ReportReasonsDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
+import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,8 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
             reportReasonsDto.setDescription(reportReasonsDomain.getDescription());
         } catch (Exception e) {
             log.info("Error converting ReportReasonsDomain to ReportReasonsDTO");
-            new ErrorResponse("Error converting ReportReasonsDomain to ReportReasonDto", e.getMessage());
+            throw new ResourceNotFoundException("Error converting ReportReasonsDomain to ReportReasonsDTO");
+            //new ErrorResponse("Error converting ReportReasonsDomain to ReportReasonDto", e.getMessage());
         }
         return reportReasonsDto;
     }
@@ -52,7 +54,8 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
             reportReasonsDomain.setIsDeleted(false);
         }catch (Exception e) {
             log.info("Error converting ReportReasonsDTO to ReportReasonsDomain");
-            new ErrorResponse("Error converting ReportReasonsDTO to ReportReasonsDomain", e.getMessage());
+            throw new ResourceNotFoundException("Error converting ReportReasonsDTO to ReportReasonsDomain");
+            //new ErrorResponse("Error converting ReportReasonsDTO to ReportReasonsDomain", e.getMessage());
         }
         return reportReasonsDomain;
     }
@@ -68,7 +71,9 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
 
             savedReportReasonDto = convertDomainToDto(savedReportReason);
         } catch (Exception e) {
-            new ErrorResponse("Error creating a Report Reason.", e.getMessage());
+            log.info("Error saving ReportReasonsDTO");
+            throw new ResourceNotFoundException("Error creating a Report Reason");
+            //new ErrorResponse("Error creating a Report Reason.", e.getMessage());
         }
         return savedReportReasonDto;
     }
@@ -79,7 +84,9 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
             reportReasonsDto.setId(id);
             log.info("Updating report reason successful");
         }catch (Exception e) {
-            new ErrorResponse("Error updating report reason.", e.getMessage());
+            log.info("Error updating ReportReasonsDTO");
+            throw new ResourceNotFoundException("Error updating report reason");
+            //new ErrorResponse("Error updating report reason.", e.getMessage());
         }
         return save(reportReasonsDto);
     }
@@ -96,7 +103,9 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
                 log.info("Report reason delete successful");
             }
         }catch (Exception e) {
-            new ErrorResponse("Error deleting report reason.", e.getMessage());
+            log.info("Error deleting ReportReasonsDTO");
+            throw new ResourceNotFoundException("Error deleting ReportReasonsDTO");
+            //new ErrorResponse("Error deleting report reason.", e.getMessage());
         }
     }
 
@@ -113,7 +122,9 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
                 log.info("Report reason get successful");
             }
         }catch (Exception e) {
-            new ErrorResponse("Error getting report reason.", e.getMessage());
+            log.info("Error getting ReportReasonsDTO");
+            throw new ResourceNotFoundException("Error getting ReportReasonsDTO");
+            //new ErrorResponse("Error getting report reason.", e.getMessage());
         }
         return reportReasonsDto;
     }

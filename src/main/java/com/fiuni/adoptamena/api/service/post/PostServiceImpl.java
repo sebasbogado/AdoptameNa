@@ -8,7 +8,6 @@ import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.post.PostDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
-import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,9 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
 
             savedPostDTO = convertDomainToDto(savedPostDomain);
         } catch (Exception e) {
-            new ErrorResponse("Error creating post", e.getMessage());
+            log.info("post save failed");
+            throw new ResourceNotFoundException("Post could not be saved");
+            //new ErrorResponse("Error creating post", e.getMessage());
         }
         return savedPostDTO;
     }
@@ -55,7 +56,9 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             postDto.setId(id);
             log.info("post update successful");
         } catch (Exception e) {
-            new ErrorResponse("Error updating post", e.getMessage());
+            log.info("post update failed");
+            throw new ResourceNotFoundException("Post could not be updated");
+            //new ErrorResponse("Error updating post", e.getMessage());
         }
         return save(postDto);
     }
@@ -72,7 +75,9 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
                 log.info("post delete successful");
             }
         } catch (Exception e) {
-            new ErrorResponse("Error deleting post", e.getMessage());
+            log.info("post delete failed");
+            throw new ResourceNotFoundException("Post could not be deleted");
+            //new ErrorResponse("Error deleting post", e.getMessage());
         }
     }
 
@@ -88,7 +93,9 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
                 log.info("post get successful");
             }
         } catch (Exception e) {
-            new ErrorResponse("Error getting post", e.getMessage());
+            log.info("post get failed");
+            throw new ResourceNotFoundException("Post could not be found");
+            //new ErrorResponse("Error getting post", e.getMessage());
         }
         return postDto;
     }
@@ -145,17 +152,20 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             if (postDomain.getUser() != null && postDomain.getUser().getId() != null) {
                 postDto.setId_user(postDomain.getUser().getId());
             } else {
+                log.info("User not found");
                 throw new ResourceNotFoundException("User not found");
             }
 
             if (postDomain.getPostType() != null && postDomain.getPostType().getId() != null) {
                 postDto.setIdPostType(postDomain.getPostType().getId());
             } else {
+                log.info("PostType not found");
                 throw new ResourceNotFoundException("post Type ID is null or invalid");
             }
         } catch (Exception e) {
-            log.error("Error converting PostDomain to PostDTO", e);
-            new ErrorResponse("Error converting PostDomain to PostDTO", e.getMessage());
+            log.info("Error converting PostDomain to PostDTO", e);
+            throw new ResourceNotFoundException("Error converting PostDomain to PostDTO");
+            //new ErrorResponse("Error converting PostDomain to PostDTO", e.getMessage());
         }
         return postDto;
     }
@@ -180,27 +190,36 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             if (postDto.getId_user() != null) {
                 UserDomain userDomain = userDao.findById(postDto.getId_user()).orElse(null);
                 //verificar si existe
-                if (userDomain != null) {
+                if (userDomain != null && !userDomain.getIsDeleted()) {
                     postDomain.setUser(userDomain);
                 } else {
+                    log.info("User not found");
                     throw new ResourceNotFoundException("User not found");
+                }
+
+            } else {
+                log.info("User not found");
+                throw new ResourceNotFoundException("post Type ID is null or invalid");
+            }
+
+            if (postDto.getIdPostType() != null) {
+                PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getIdPostType())
+                        .orElseThrow(() -> new ResourceNotFoundException("PostType not found"));
+                if (postTypeDomain != null && !postTypeDomain.getIsDeleted()) {
+                    postDomain.setPostType(postTypeDomain);
+                } else {
+                    log.info("PostType not found");
+                    throw new ResourceNotFoundException("PostType not found");
                 }
 
             } else {
                 throw new ResourceNotFoundException("post Type ID is null or invalid");
             }
 
-            if (postDto.getIdPostType() != null) {
-                PostTypeDomain postTypeDomain = postTypeDao.findById(postDto.getIdPostType())
-                        .orElseThrow(() -> new RuntimeException("PostType not found"));
-                postDomain.setPostType(postTypeDomain);
-            } else {
-                throw new ResourceNotFoundException("post Type ID is null or invalid");
-            }
-
         } catch (Exception e) {
             log.error("Error converting PostDTO to PostDomain", e);
-            new ErrorResponse("Error converting PostDTO to PostDomain", e.getMessage());
+            throw new ResourceNotFoundException("Error converting PostDTO to PostDomain");
+            //new ErrorResponse("Error converting PostDTO to PostDomain", e.getMessage());
         }
         return postDomain;
     }
