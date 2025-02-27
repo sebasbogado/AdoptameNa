@@ -4,6 +4,7 @@ import com.fiuni.adoptamena.api.dao.profile.IProfileDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.profile.*;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
+import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.exceptions.*;
 
 import org.springframework.stereotype.Service;
@@ -14,12 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ProfileServiceImpl implements IProfileService {
+public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDTO> implements IProfileService {
     @Autowired 
     private IProfileDao profileDao;
     @Autowired 
     private IUserDao userDao;
     //dto to domain
+    @Override
     protected ProfileDomain convertDtoToDomain(ProfileDTO dto) {
         final ProfileDomain domain = new ProfileDomain();
         domain.setId(dto.getId());
@@ -37,7 +39,8 @@ public class ProfileServiceImpl implements IProfileService {
         return domain;
     }
     //domain to dto
-    protected ProfileDTO convertDomainToDTO(ProfileDomain domain) {
+    @Override
+    protected ProfileDTO convertDomainToDto(ProfileDomain domain) {
         final ProfileDTO dto = new ProfileDTO();
         dto.setId(domain.getId());
         dto.setOrganizationName(domain.getOrganizationName());
@@ -53,13 +56,14 @@ public class ProfileServiceImpl implements IProfileService {
         dto.setIsDeleted(domain.getIsDeleted());
         return dto;
     }
-    
-    public ProfileDTO getById(Integer id) {
+    @Override
+    public ProfileDTO getById(int id) {
         ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
             new ResourceNotFoundException("Perfil no encontrado"));
-        return convertDomainToDTO(domain);
+        return convertDomainToDto(domain);
     }
-    public void saveProfile(Integer userId) {
+    //save(DTO)
+    public ProfileDTO save(Integer userId) {
         log.info("Creando perfil {}");
         ProfileDomain domain = new ProfileDomain();
         domain.setUser(userDao.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> 
@@ -67,11 +71,11 @@ public class ProfileServiceImpl implements IProfileService {
 
         setDefaultAttributes(domain);
         log.info("Usuario a guardar, {}", domain);
-        profileDao.save(domain);
-        return;
+        return convertDomainToDto(profileDao.save(domain));
+        
     }
-    
-    public ProfileDTO updateProfile(Integer id, ProfileDTO profile) {
+    @Override
+    public ProfileDTO updateById(int id, ProfileDTO profile) {
         //validate user exists
         ProfileDomain existingProfile = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
             new ResourceNotFoundException("Perfil no encontrado"));
@@ -81,9 +85,17 @@ public class ProfileServiceImpl implements IProfileService {
 
         profileDomain.setId(id);
         ProfileDomain profileDomainSaved = profileDao.save(profileDomain);
-        return convertDomainToDTO(profileDomainSaved);
+        return convertDomainToDto(profileDomainSaved);
     }
-    //delete when user is deleted
+    //delete when user is deleted in user service
+    @Override
+    public void deleteById(int id) {
+        ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
+            new ResourceNotFoundException("Perfil no encontrado"));
+        domain.setIsDeleted(true);
+        profileDao.save(domain);
+        log.info("Perfil eliminado {}", domain);
+    }
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
         domain.setName(domain.getUser().getEmail());
