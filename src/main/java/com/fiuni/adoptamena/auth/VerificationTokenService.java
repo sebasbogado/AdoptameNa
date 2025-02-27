@@ -1,10 +1,9 @@
-package com.fiuni.adoptamena.auth.service;
+package com.fiuni.adoptamena.auth;
 
 import com.fiuni.adoptamena.api.dao.user.IVerificationTokenDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.domain.user.VerificationTokenDomain;
-import com.fiuni.adoptamena.auth.response.GenericResponse;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
 import com.fiuni.adoptamena.utils.EmailService;

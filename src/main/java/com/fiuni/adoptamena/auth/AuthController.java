@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.auth.controller;
+package com.fiuni.adoptamena.auth;
 
 import jakarta.validation.Valid;
 
@@ -6,13 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import com.fiuni.adoptamena.auth.response.AuthResponse;
-import com.fiuni.adoptamena.auth.response.GenericResponse;
-import com.fiuni.adoptamena.auth.response.LoginRequest;
-import com.fiuni.adoptamena.auth.response.RegisterRequest;
-import com.fiuni.adoptamena.auth.service.AuthService;
-import com.fiuni.adoptamena.auth.service.VerificationTokenService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

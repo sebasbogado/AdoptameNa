@@ -1,14 +1,10 @@
-package com.fiuni.adoptamena.auth.service;
+package com.fiuni.adoptamena.auth;
 
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.api.service.profile.IProfileService;
-import com.fiuni.adoptamena.auth.response.AuthResponse;
-import com.fiuni.adoptamena.auth.response.GenericResponse;
-import com.fiuni.adoptamena.auth.response.LoginRequest;
-import com.fiuni.adoptamena.auth.response.RegisterRequest;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 

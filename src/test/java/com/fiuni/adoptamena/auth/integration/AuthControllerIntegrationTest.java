@@ -1,8 +1,8 @@
 package com.fiuni.adoptamena.auth.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiuni.adoptamena.auth.response.LoginRequest;
-import com.fiuni.adoptamena.auth.response.RegisterRequest;
+import com.fiuni.adoptamena.auth.LoginRequest;
+import com.fiuni.adoptamena.auth.RegisterRequest;
 
 import jakarta.transaction.Transactional;
 
