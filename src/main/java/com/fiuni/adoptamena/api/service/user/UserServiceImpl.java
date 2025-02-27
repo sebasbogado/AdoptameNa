@@ -27,11 +27,8 @@ public class UserServiceImpl implements IUserService {
             new ResourceNotFoundException("Usuario no encontrado"));
         domain.setIsDeleted(true);
         //delete profile
-        ProfileDomain profile = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
-            new ResourceNotFoundException("Perfil no encontrado"));
-        profile.setIsDeleted(true);
+        profileDao.deleteById(id);
         
-        profileDao.save(profile);
         userDao.save(domain);
         log.info("Usuario eliminado: {}", domain);
     }
