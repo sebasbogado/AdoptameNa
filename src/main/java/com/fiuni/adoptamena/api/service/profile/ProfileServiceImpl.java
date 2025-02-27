@@ -10,7 +10,7 @@ import com.fiuni.adoptamena.exception_handler.exceptions.*;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lombok.val;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -62,8 +62,14 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
             new ResourceNotFoundException("Perfil no encontrado"));
         return convertDomainToDto(domain);
     }
-    //save(DTO)
-    public ProfileDTO save(Integer userId) {
+    //don't use
+    @Override
+    public ProfileDTO save(ProfileDTO profile) {
+        return profile;
+    }
+
+    @Override
+    public void save(int userId) {
         log.info("Creando perfil {}");
         ProfileDomain domain = new ProfileDomain();
         domain.setUser(userDao.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> 
@@ -71,8 +77,8 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
 
         setDefaultAttributes(domain);
         log.info("Usuario a guardar, {}", domain);
-        return convertDomainToDto(profileDao.save(domain));
-        
+        profileDao.save(domain);
+        return;
     }
     @Override
     public ProfileDTO updateById(int id, ProfileDTO profile) {
