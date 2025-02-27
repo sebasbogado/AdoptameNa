@@ -19,7 +19,7 @@ import java.util.*;
 public class UserDomain implements BaseDomain, UserDetails {
 
     @Serial
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +44,9 @@ public class UserDomain implements BaseDomain, UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private ProfileDomain profile;
+
+    @Column(name = "bool_verified", nullable = false)
+    private Boolean isVerified;
 
     @Column(name = "bool_deleted", nullable = false)
     private Boolean isDeleted;

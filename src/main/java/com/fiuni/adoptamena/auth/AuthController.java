@@ -1,10 +1,11 @@
 package com.fiuni.adoptamena.auth;
 
 import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @Autowired
     private final AuthService authService;
+
+    @Autowired
+    private final VerificationTokenService verificationTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
@@ -35,4 +40,16 @@ public class AuthController {
         }
         return ResponseEntity.ok(authService.register(request));
     }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<AuthResponse> verifyEmail(@RequestParam("token") String token) {
+        return ResponseEntity.ok(verificationTokenService.verifyEmail(token));
+    }
+
+    // Generar token nuevamente
+    @PostMapping("/resend-verification-token")
+    public ResponseEntity<AuthResponse> resendVerificationToken(@RequestParam("email") String email) {
+        return ResponseEntity.ok(verificationTokenService.resendVerificationToken(email));
+    }
+
 }
