@@ -6,6 +6,7 @@ import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import com.fiuni.adoptamena.exception_handler.exceptions.ForbiddenException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
 import jakarta.persistence.PersistenceException;
@@ -55,22 +56,30 @@ public class AuthService {
     private static final Set<String> VALID_ROLES = Set.of("USER", "ORGANIZATION");
 
     public AuthResponse login(LoginRequest request) {
+        // Autenticar al usuario con email y contraseña
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         } catch (Exception e) {
-            throw new BadCredentialsException("Email o contraseña incorrectos.", e);
+            throw new BadCredentialsException("Email o contraseña incorrectos.");
         }
-
-        UserDetails user = userDao.findByEmail(request.getEmail())
+    
+        // Buscar el usuario en la base de datos
+        UserDomain user = userDao.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado con el email: " + request.getEmail()));
-
-        String token = jwtService.getToken(user);
+    
+        // Verificar si la cuenta está verificada
+        if (!user.getIsVerified()) {
+            throw new ForbiddenException("La cuenta no está verificada. Revisa tu email para verificar tu cuenta.");
+        }
+    
+        // Generar y devolver el token de autenticación
         return AuthResponse.builder()
-                .token(token)
+                .token(jwtService.getToken(user))
                 .build();
     }
+    
 
     @Transactional
     public GenericResponse register(RegisterRequest request, boolean sendEmail) {
