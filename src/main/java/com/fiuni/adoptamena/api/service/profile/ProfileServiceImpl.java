@@ -27,7 +27,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         final ProfileDomain domain = new ProfileDomain();
         domain.setId(dto.getId());
         domain.setOrganizationName(dto.getOrganizationName());
-        domain.setName(dto.getName());
+        domain.setFullName(dto.getFullName());
         domain.setAddress(dto.getAddress());
         domain.setDescription(dto.getDescription());
         domain.setGender(dto.getGender());
@@ -44,7 +44,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         final ProfileDTO dto = new ProfileDTO();
         dto.setId(domain.getId());
         dto.setOrganizationName(domain.getOrganizationName());
-        dto.setName(domain.getName());
+        dto.setFullName(domain.getFullName());
         dto.setAddress(domain.getAddress());
         dto.setDescription(domain.getDescription());
         dto.setGender(domain.getGender());
@@ -112,7 +112,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
-        domain.setName(domain.getUser().getEmail());
+        domain.setFullName(domain.getUser().getEmail());
         domain.setOrganizationName(null);
         domain.setAddress(null);
         domain.setDescription(null);

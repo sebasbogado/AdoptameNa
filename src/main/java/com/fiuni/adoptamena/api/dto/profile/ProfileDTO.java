@@ -11,7 +11,7 @@ public class ProfileDTO extends BaseDTO {
     private static final long serialVersionUID = 1L;
 
     private String organizationName;
-    private String name;
+    private String fullName;
     private String address;
     private String description;
     private EnumGender gender;

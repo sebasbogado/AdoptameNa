@@ -32,7 +32,7 @@ public class ProfileDomain implements BaseDomain {
     private String organizationName;
 
     @Column(name="str_full_name")
-    private String name;
+    private String fullName;
 
     @Column(name="str_address")
     private String address;
