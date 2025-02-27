@@ -19,5 +19,4 @@ public class ReportReasonsDto implements Serializable {
 
     private String description;
 
-    private Boolean isDeleted;
 }

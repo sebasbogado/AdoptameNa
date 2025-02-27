@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface IReportReasonsDao extends CrudRepository<ReportReasonsDomain, Integer> {
     Page<ReportReasonsDomain> findAllByIsDeletedFalse(Pageable pageable);
 
-    Page<ReportReasonsDomain> findByDescriptionContaining(String description, Pageable pageable);
+    Page<ReportReasonsDomain> findByDescriptionContainingAndIsDeletedFalse(String description, Pageable pageable);
 }

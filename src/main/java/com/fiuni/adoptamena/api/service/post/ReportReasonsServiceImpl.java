@@ -48,6 +48,8 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
             reportReasonsDomain = new ReportReasonsDomain();
             reportReasonsDomain.setId(reportReasonsDto.getId());
             reportReasonsDomain.setDescription(reportReasonsDto.getDescription());
+
+            reportReasonsDomain.setIsDeleted(false);
         }catch (Exception e) {
             log.info("Error converting ReportReasonsDto to ReportReasonsDomain");
             new ErrorResponse("Error converting ReportReasonsDto to ReportReasonsDomain", e.getMessage());
@@ -87,7 +89,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
         log.info("Deleting report reason");
         try {
             ReportReasonsDomain reportReasonsDomain = reportReasonsDao.findById(id).orElse(null);
-            if (reportReasonsDomain != null) {
+            if (reportReasonsDomain != null && !reportReasonsDomain.getIsDeleted()) {
                 //reportReasonsDao.delete(reportReasonsDomain); //descomentar para borrar en la base de datos
                 reportReasonsDomain.setIsDeleted(true);         //comentar para borrar en la basse de datos
                 reportReasonsDao.save(reportReasonsDomain);     //comentar para borrar en la basse de datos
@@ -104,7 +106,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
         ReportReasonsDto reportReasonsDto = null;
         try {
             Optional<ReportReasonsDomain> reportReasonsDomainOptional = reportReasonsDao.findById(id);
-            if (reportReasonsDomainOptional.isPresent()) {
+            if (reportReasonsDomainOptional.isPresent() && !reportReasonsDomainOptional.get().getIsDeleted()) {
                 ReportReasonsDomain reportReasonsDomain = reportReasonsDomainOptional.get();
 
                 reportReasonsDto = convertDomainToDto(reportReasonsDomain);
@@ -124,7 +126,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
             return reportReasonsPage.map(this::convertDomainToDto);
         }
 
-        Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao.findByDescriptionContaining(description, pageable);
+        Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao.findByDescriptionContainingAndIsDeletedFalse(description, pageable);
         return reportReasonsPage.map(this::convertDomainToDto);
     }
 }
