@@ -32,7 +32,7 @@ public class UserController {
     @PutMapping("/{id}/profile")
     public ResponseEntity<ProfileDTO> updateMethodName(@PathVariable Integer id, @RequestBody ProfileDTO profile) {
         log.info("llega a controller");
-        ProfileDTO result = profileService.updateProfile(id, profile);
+        ProfileDTO result = profileService.updateById(id, profile);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
