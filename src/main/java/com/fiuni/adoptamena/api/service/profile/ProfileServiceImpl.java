@@ -55,7 +55,7 @@ public class ProfileServiceImpl implements IProfileService {
     }
     
     public ProfileDTO getById(Integer id) {
-        ProfileDomain domain = profileDao.findById(id).orElseThrow(()-> 
+        ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
             new ResourceNotFoundException("Perfil no encontrado"));
         return convertDomainToDTO(domain);
     }
@@ -73,7 +73,7 @@ public class ProfileServiceImpl implements IProfileService {
     
     public ProfileDTO updateProfile(Integer id, ProfileDTO profile) {
         //validate user exists
-        ProfileDomain existingProfile = profileDao.findById(id).orElseThrow(()-> 
+        ProfileDomain existingProfile = profileDao.findByIdAndIsDeletedFalse(id).orElseThrow(()-> 
             new ResourceNotFoundException("Perfil no encontrado"));
         validateGender(profile.getGender().name());
         //validate user exists
