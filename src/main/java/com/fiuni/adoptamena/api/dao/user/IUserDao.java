@@ -13,8 +13,9 @@ public interface IUserDao extends CrudRepository<UserDomain, Integer> {
     // Obtener un usuario por su id
     Optional<UserDomain> findByIdAndIsDeletedFalse(Integer id);
 
-    // Obtener un usuario por su email
+    // Obtener un usuario por su email y que no haya sido eliminado
     Optional<UserDomain> findByEmailAndIsDeletedFalse(String email);
 
+    // Obtener un usuario por su email
     Optional<UserDomain> findByEmail(String email);
 }
