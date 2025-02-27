@@ -1,10 +1,14 @@
-package com.fiuni.adoptamena.auth;
+package com.fiuni.adoptamena.auth.service;
 
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.api.service.profile.IProfileService;
+import com.fiuni.adoptamena.auth.response.AuthResponse;
+import com.fiuni.adoptamena.auth.response.GenericResponse;
+import com.fiuni.adoptamena.auth.response.LoginRequest;
+import com.fiuni.adoptamena.auth.response.RegisterRequest;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
@@ -48,12 +52,9 @@ public class AuthService {
 
     @Autowired
     private IProfileService profileService;
-  
-    @Autowired
-    private VerificationTokenService verificationTokenService;
 
     @Autowired
-    private EmailService emailService;
+    private VerificationTokenService verificationTokenService;
 
     public AuthResponse login(LoginRequest request) {
         try {
@@ -63,7 +64,7 @@ public class AuthService {
             throw new BadCredentialsException("Email o contraseña incorrectos.", e);
         }
 
-        UserDetails user = userDao.findByEmail(request.getEmail())
+        UserDetails user = userDao.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado con el email: " + request.getEmail()));
 
@@ -73,7 +74,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse register(RegisterRequest request) {
+    public GenericResponse register(RegisterRequest request) {
         // Validar el role
         if (!("USER".equalsIgnoreCase(request.getRole()) || "ORGANIZATION".equalsIgnoreCase(request.getRole()))) {
             throw new BadRequestException("Rol inválido. Debe ser 'USER' o 'ORGANIZATION'");
@@ -93,7 +94,7 @@ public class AuthService {
         user.setIsVerified(false);
         user.setCreationDate(new Date());
 
-      // Guardar el usuario
+        // Guardar el usuario
         try {
             userDao.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -107,22 +108,17 @@ public class AuthService {
             throw new RuntimeException("Error al guardar usuario");
         }
 
-        //Create profile
+        // Create profile
         ProfileDTO profile = new ProfileDTO();
         profile.setId(user.getId());
         profileService.save(profile);
 
-        // Generar token de verificación
-        String token = verificationTokenService.createVerificationToken(user);
-
-        // Enviar email con enlace de verificación
-        String verificationLink = "http://localhost:8080/auth/verify-email?token=" + token;
-        emailService.sendVerificationEmail(user.getEmail(), verificationLink);
+        // Crear un token de verificación y enviarlo por email
+        verificationTokenService.sendVerificationEmail(user.getEmail());
 
         // Responder con un mensaje de éxito
-        return AuthResponse.builder()
-                .token("Registro exitoso. Verifica tu email para activar la cuenta.")
-                .build();
+        return GenericResponse.builder()
+                .message("Usuario registrado exitosamente. Revisa tu email para verificar tu cuenta.").build();
     }
 
 }

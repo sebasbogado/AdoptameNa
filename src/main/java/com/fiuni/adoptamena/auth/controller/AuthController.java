@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.auth;
+package com.fiuni.adoptamena.auth.controller;
 
 import jakarta.validation.Valid;
 
@@ -6,6 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import com.fiuni.adoptamena.auth.response.AuthResponse;
+import com.fiuni.adoptamena.auth.response.GenericResponse;
+import com.fiuni.adoptamena.auth.response.LoginRequest;
+import com.fiuni.adoptamena.auth.response.RegisterRequest;
+import com.fiuni.adoptamena.auth.service.AuthService;
+import com.fiuni.adoptamena.auth.service.VerificationTokenService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
+    public ResponseEntity<GenericResponse> register(
             @Valid @RequestBody RegisterRequest request,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -42,14 +50,14 @@ public class AuthController {
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<AuthResponse> verifyEmail(@RequestParam("token") String token) {
+    public ResponseEntity<GenericResponse> verifyEmail(@RequestParam("token") String token) {
         return ResponseEntity.ok(verificationTokenService.verifyEmail(token));
     }
 
     // Generar token nuevamente
     @PostMapping("/resend-verification-token")
-    public ResponseEntity<AuthResponse> resendVerificationToken(@RequestParam("email") String email) {
-        return ResponseEntity.ok(verificationTokenService.resendVerificationToken(email));
+    public ResponseEntity<GenericResponse> resendVerificationToken(@RequestParam("email") String email) {
+        return ResponseEntity.ok(verificationTokenService.sendVerificationEmail(email));
     }
 
 }

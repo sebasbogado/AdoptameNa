@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.auth;
+package com.fiuni.adoptamena.auth.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
