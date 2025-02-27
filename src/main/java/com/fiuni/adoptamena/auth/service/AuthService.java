@@ -30,8 +30,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Set;
 
-import com.fiuni.adoptamena.utils.EmailService;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j

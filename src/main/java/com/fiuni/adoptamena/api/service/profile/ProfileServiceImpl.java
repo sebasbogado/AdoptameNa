@@ -78,8 +78,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
 
     @Override
     public ProfileDTO updateById(int id, ProfileDTO profile) {
-        // validate user exists
-        ProfileDomain existingProfile = profileDao.findByIdAndIsDeletedFalse(id)
+        profileDao.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
         validateGender(profile.getGender().name());
         // validate user exists

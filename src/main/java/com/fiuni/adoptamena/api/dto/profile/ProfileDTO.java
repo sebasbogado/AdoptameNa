@@ -6,7 +6,9 @@ import com.fiuni.adoptamena.api.dto.base.BaseDTO;
 import lombok.*;
 
 import java.util.Date;
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ProfileDTO extends BaseDTO {
     private static final long serialVersionUID = 1L;
 

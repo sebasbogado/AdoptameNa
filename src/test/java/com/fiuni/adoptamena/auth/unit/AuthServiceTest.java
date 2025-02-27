@@ -23,7 +23,6 @@ import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.RoleDomain;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
-import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.auth.response.AuthResponse;
 import com.fiuni.adoptamena.auth.response.GenericResponse;
 import com.fiuni.adoptamena.auth.response.LoginRequest;
