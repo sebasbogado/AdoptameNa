@@ -97,7 +97,7 @@ public class AuthService {
             throw new RuntimeException("Error al guardar usuario");
         }
         //Create profile
-        profileService.saveProfile(user.getId());
+        profileService.save(user.getId());
         // Crear la respuesta
         AuthResponse authResponse = new AuthResponse();
         authResponse.setToken(jwtService.getToken(user));
