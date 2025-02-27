@@ -61,24 +61,19 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
             new ResourceNotFoundException("Perfil no encontrado"));
         return convertDomainToDto(domain);
     }
-    //don't use
+    
     @Override
     public ProfileDTO save(ProfileDTO profile) {
-        return profile;
-    }
-
-    @Override
-    public void save(int userId) {
         log.info("Creando perfil {}");
         ProfileDomain domain = new ProfileDomain();
-        domain.setUser(userDao.findByIdAndIsDeletedFalse(userId).orElseThrow(()-> 
+        domain.setUser(userDao.findByIdAndIsDeletedFalse(profile.getId()).orElseThrow(()-> 
             new ResourceNotFoundException("Usuario no encontrado")));
 
         setDefaultAttributes(domain);
         log.info("Usuario a guardar, {}", domain);
-        profileDao.save(domain);
-        return;
+        return convertDomainToDto(profileDao.save(domain));
     }
+
     @Override
     public ProfileDTO updateById(int id, ProfileDTO profile) {
         //validate user exists

@@ -203,8 +203,4 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
         return postDomain;
     }
 
-    @Override
-    public void save(int id){
-        return;
-    }
 }
