@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Size;
 public class LoginRequest {
     @NotBlank(message = "El email no puede estar vacío")
     @Email(message = "Formato de email incorrecto")
-    @Email
     String email;
 
     @NotBlank(message = "La contrasena no puede estar vacio")

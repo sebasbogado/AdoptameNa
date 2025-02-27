@@ -3,6 +3,8 @@ package com.fiuni.adoptamena.auth;
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
+import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
+import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
@@ -45,6 +47,9 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private IProfileService profileService;
+  
+    @Autowired
     private VerificationTokenService verificationTokenService;
 
     @Autowired
@@ -69,6 +74,11 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        // Validar el role
+        if (!("USER".equalsIgnoreCase(request.getRole()) || "ORGANIZATION".equalsIgnoreCase(request.getRole()))) {
+            throw new BadRequestException("Rol inválido. Debe ser 'USER' o 'ORGANIZATION'");
+        }
+
         // Crear el usuario
         UserDomain user = new UserDomain();
         user.setUsername(request.getEmail());
@@ -76,28 +86,31 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         // Obtener el rol
-        user.setRole(roleDao.findByName("user")
-                .orElseThrow(() -> new RuntimeException("Role not found")));
+        user.setRole(roleDao.findByName(request.getRole().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.getRole())));
 
         user.setIsDeleted(false);
         user.setIsVerified(false);
         user.setCreationDate(new Date());
 
-        // Guardar el usuario
+      // Guardar el usuario
         try {
             userDao.save(user);
         } catch (DataIntegrityViolationException e) {
-            log.error("Error al guardar usuario. Usuario ya existente1");
+            log.error("Error al guardar usuario. Usuario ya existente", e);
             throw new BadRequestException("Usuario ya existente");
         } catch (PersistenceException e) {
-            log.error("Error al guardar usuario. Usuario ya existente2");
-
+            log.error("Error de persistencia en la base de datos", e);
             throw new BadRequestException("Error de persistencia en la base de datos.");
         } catch (Exception e) {
-            log.error("Error al guardar usuario. Usuario ya existente3");
-            log.error(e.getMessage());
+            log.error("Error al guardar usuario", e);
             throw new RuntimeException("Error al guardar usuario");
         }
+
+        //Create profile
+        ProfileDTO profile = new ProfileDTO();
+        profile.setId(user.getId());
+        profileService.save(profile);
 
         // Generar token de verificación
         String token = verificationTokenService.createVerificationToken(user);

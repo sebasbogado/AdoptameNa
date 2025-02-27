@@ -32,7 +32,8 @@ class AuthControllerIntegrationTest {
         void testRegisterAndLoginFlow() throws Exception {
                 String email = "usertest@example.com";
                 String password = "password123";
-                RegisterRequest registerRequest = new RegisterRequest(email, password);
+                String role = "USER";
+                RegisterRequest registerRequest = new RegisterRequest(email, password, role);
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -49,9 +50,21 @@ class AuthControllerIntegrationTest {
         }
 
         @Test
+        void testRegisterWithInvalidRole() throws Exception {
+                RegisterRequest request = new RegisterRequest("valid@example.com", "password123", "Invalid");
+
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
         void testRegisterWithExistingEmail() throws Exception {
                 String email = "existing@example.com";
-                RegisterRequest request = new RegisterRequest(email, "password123");
+                String password = "password123";
+                String role = "USER";
+                RegisterRequest request = new RegisterRequest(email, password, role);
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +89,7 @@ class AuthControllerIntegrationTest {
 
         @Test
         void testRegisterWithInvalidEmail() throws Exception {
-                RegisterRequest request = new RegisterRequest("invalidemail", "password123");
+                RegisterRequest request = new RegisterRequest("invalidemail", "password123", "USER");
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +99,7 @@ class AuthControllerIntegrationTest {
 
         @Test
         void testRegisterWithShortPassword() throws Exception {
-                RegisterRequest request = new RegisterRequest("valid@example.com", "123");
+                RegisterRequest request = new RegisterRequest("valid@example.com", "123", "USER");
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)

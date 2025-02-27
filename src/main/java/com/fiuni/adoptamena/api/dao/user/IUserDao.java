@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface IUserDao extends CrudRepository<UserDomain, Integer> {
     Optional<UserDomain> findByEmail(String email);
     // Métodos adicionales si es necesario
+    Optional<UserDomain> findByIdAndIsDeletedFalse(Integer id);
 }
