@@ -23,11 +23,13 @@ import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.RoleDomain;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
+import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.auth.response.AuthResponse;
 import com.fiuni.adoptamena.auth.response.GenericResponse;
 import com.fiuni.adoptamena.auth.response.LoginRequest;
 import com.fiuni.adoptamena.auth.response.RegisterRequest;
 import com.fiuni.adoptamena.auth.service.AuthService;
+import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
@@ -43,6 +45,8 @@ class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private AuthenticationManager authenticationManager;
+    @Mock
+    private IProfileService profileService;
 
     @InjectMocks
     private AuthService authService;
@@ -94,7 +98,6 @@ class AuthServiceTest {
 
         when(roleDao.findByName("user")).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        when(jwtService.getToken(any(UserDetails.class))).thenReturn("token");
         when(userDao.save(any(UserDomain.class))).thenAnswer(i -> i.getArgument(0));
 
         GenericResponse response = authService.register(request, false);
@@ -120,7 +123,6 @@ class AuthServiceTest {
 
         when(roleDao.findByName("organization")).thenReturn(Optional.of(organizationRole));
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        when(jwtService.getToken(any(UserDetails.class))).thenReturn("token");
         when(userDao.save(any(UserDomain.class))).thenAnswer(i -> i.getArgument(0));
 
         GenericResponse response = authService.register(request, false);
