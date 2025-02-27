@@ -9,5 +9,11 @@ import org.springframework.data.domain.Pageable;
 public interface IPostService extends IBaseService<PostDomain, PostDTO> {
 
 
+
     Page<PostDTO> getAllPosts(Pageable pageable, String title, String content, Integer userId, Integer postTypeId);
+
+    Page<PostDTO> searchPostByKeyword(Pageable pageable, String keyword);
+
+    void increaseSharedCounter(Integer postId);
+
 }

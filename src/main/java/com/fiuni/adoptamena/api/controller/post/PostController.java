@@ -62,4 +62,26 @@ public class PostController {
         this.postService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("post with id: " + id + "was deleted");
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<PostDTO>> searchPostByKeyword(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
+            @RequestParam(value = "keyword") String keyword
+    ) {
+        String[] sortParams = sort.split(",");
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
+
+
+        Page<PostDTO> postsPage = postService.searchPostByKeyword(pageable, keyword);
+
+        return ResponseEntity.status(HttpStatus.OK).body(postsPage);
+    }
+
+    @PutMapping("/{id}/increment-counter")
+    public ResponseEntity<String> incrementPostCounter(@PathVariable Integer id) {
+        postService.increaseSharedCounter(id);
+        return ResponseEntity.ok().body("Shared Counter of the post was increased.");
+    }
 }

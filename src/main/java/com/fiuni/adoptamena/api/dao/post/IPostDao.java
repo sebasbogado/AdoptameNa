@@ -15,4 +15,6 @@ public interface IPostDao extends CrudRepository<PostDomain, Integer> {
     Page<PostDomain> findByFiltersAAndIsDeletedFalse(Pageable pageable, String title, String content, Integer userId, Integer postTypeId);
 
     Page<PostDomain> findAllByIsDeletedFalse(Pageable pageable);
+
+    Page<PostDomain> findByTitleContainingOrContentContaining(String keyword, String keyword1, Pageable pageable);
 }
