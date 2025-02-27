@@ -1,6 +1,6 @@
-package com.fiuni.adoptamena.api.controller;
+package com.fiuni.adoptamena.api.controller.post;
 
-import com.fiuni.adoptamena.api.dto.ReportReasonsDto;
+import com.fiuni.adoptamena.api.dto.post.ReportReasonsDTO;
 import com.fiuni.adoptamena.api.service.post.IReportReasonsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,14 +19,14 @@ public class ReportReasonsController {
     private IReportReasonsService reportReasonsService;
 
     @PostMapping({"", "/"})
-    public ResponseEntity<ReportReasonsDto> create(@RequestBody() ReportReasonsDto reportReasonsDto) {
-        ReportReasonsDto data = this.reportReasonsService.save(reportReasonsDto);
+    public ResponseEntity<ReportReasonsDTO> create(@RequestBody() ReportReasonsDTO reportReasonsDto) {
+        ReportReasonsDTO data = this.reportReasonsService.save(reportReasonsDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
     @PutMapping({"/{id}"})
-    public ResponseEntity<ReportReasonsDto> update(@PathVariable(name = "id", required = true) int id, @RequestBody() ReportReasonsDto reportReasonsDto)  {
-        ReportReasonsDto data = this.reportReasonsService.updateById(id, reportReasonsDto);
+    public ResponseEntity<ReportReasonsDTO> update(@PathVariable(name = "id", required = true) int id, @RequestBody() ReportReasonsDTO reportReasonsDto)  {
+        ReportReasonsDTO data = this.reportReasonsService.updateById(id, reportReasonsDto);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
@@ -37,13 +37,13 @@ public class ReportReasonsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReportReasonsDto> getReportReasonById(@PathVariable(name = "id", required = true) int id) {
-        ReportReasonsDto data = this.reportReasonsService.getById(id);
+    public ResponseEntity<ReportReasonsDTO> getReportReasonById(@PathVariable(name = "id", required = true) int id) {
+        ReportReasonsDTO data = this.reportReasonsService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
     @GetMapping({"", "/"})
-    public ResponseEntity<Page<ReportReasonsDto>> getAllReportReasons(
+    public ResponseEntity<Page<ReportReasonsDTO>> getAllReportReasons(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
@@ -52,7 +52,7 @@ public class ReportReasonsController {
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
 
-        Page<ReportReasonsDto> reportReasonsPage = reportReasonsService.getAllReportReasons(pageable, description);
+        Page<ReportReasonsDTO> reportReasonsPage = reportReasonsService.getAllReportReasons(pageable, description);
 
         return ResponseEntity.status(HttpStatus.OK).body(reportReasonsPage);
     }

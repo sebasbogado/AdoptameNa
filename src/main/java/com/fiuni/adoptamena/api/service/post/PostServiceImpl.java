@@ -110,7 +110,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
     public Page<PostDTO> searchPostByKeyword(Pageable pageable, String keyword) {
         log.info("Searching posts by keyword: {}", keyword);
 
-        Page<PostDomain> postPage = postDao.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
+        Page<PostDomain> postPage = postDao.findByTitleContainingOrContentContainingAndIsDeletedFalse(keyword, keyword, pageable);
 
         return postPage.map(this::convertDomainToDto);
     }

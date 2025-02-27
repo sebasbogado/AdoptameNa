@@ -2,7 +2,7 @@ package com.fiuni.adoptamena.api.service.post;
 
 import com.fiuni.adoptamena.api.dao.post.IReportReasonsDao;
 import com.fiuni.adoptamena.api.domain.post.ReportReasonsDomain;
-import com.fiuni.adoptamena.api.dto.ReportReasonsDto;
+import com.fiuni.adoptamena.api.dto.post.ReportReasonsDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomain, ReportReasonsDto> implements IReportReasonsService {
+public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomain, ReportReasonsDTO> implements IReportReasonsService {
 
     private static final Logger log = LoggerFactory.getLogger(PostTypeServiceImpl.class);
 
@@ -25,24 +25,24 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     private IReportReasonsDao reportReasonsDao;
 
     @Override
-    protected ReportReasonsDto convertDomainToDto(ReportReasonsDomain reportReasonsDomain) {
-        log.info("converting ReportReasonsDomain to ReportReasonsDto");
+    protected ReportReasonsDTO convertDomainToDto(ReportReasonsDomain reportReasonsDomain) {
+        log.info("converting ReportReasonsDomain to ReportReasonsDTO");
 
-        ReportReasonsDto reportReasonsDto = null;
+        ReportReasonsDTO reportReasonsDto = null;
         try {
-            reportReasonsDto = new ReportReasonsDto();
+            reportReasonsDto = new ReportReasonsDTO();
             reportReasonsDto.setId(reportReasonsDomain.getId());
             reportReasonsDto.setDescription(reportReasonsDomain.getDescription());
         } catch (Exception e) {
-            log.info("Error converting ReportReasonsDomain to ReportReasonsDto");
+            log.info("Error converting ReportReasonsDomain to ReportReasonsDTO");
             new ErrorResponse("Error converting ReportReasonsDomain to ReportReasonDto", e.getMessage());
         }
         return reportReasonsDto;
     }
 
     @Override
-    protected ReportReasonsDomain convertDtoToDomain(ReportReasonsDto reportReasonsDto) {
-        log.info("converting ReportReasonsDto to ReportReasonsDomain");
+    protected ReportReasonsDomain convertDtoToDomain(ReportReasonsDTO reportReasonsDto) {
+        log.info("converting ReportReasonsDTO to ReportReasonsDomain");
         ReportReasonsDomain reportReasonsDomain = null;
         try {
             reportReasonsDomain = new ReportReasonsDomain();
@@ -51,16 +51,16 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
 
             reportReasonsDomain.setIsDeleted(false);
         }catch (Exception e) {
-            log.info("Error converting ReportReasonsDto to ReportReasonsDomain");
-            new ErrorResponse("Error converting ReportReasonsDto to ReportReasonsDomain", e.getMessage());
+            log.info("Error converting ReportReasonsDTO to ReportReasonsDomain");
+            new ErrorResponse("Error converting ReportReasonsDTO to ReportReasonsDomain", e.getMessage());
         }
         return reportReasonsDomain;
     }
 
     @Override
-    public ReportReasonsDto save(ReportReasonsDto reportReasonsDto) {
+    public ReportReasonsDTO save(ReportReasonsDTO reportReasonsDto) {
 
-        ReportReasonsDto savedReportReasonDto = null;
+        ReportReasonsDTO savedReportReasonDto = null;
         try {
             ReportReasonsDomain reportReasonsDomain = convertDtoToDomain(reportReasonsDto);
             ReportReasonsDomain savedReportReason = reportReasonsDao.save(reportReasonsDomain);
@@ -74,7 +74,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public ReportReasonsDto updateById(int id, ReportReasonsDto reportReasonsDto) {
+    public ReportReasonsDTO updateById(int id, ReportReasonsDTO reportReasonsDto) {
         try {
             reportReasonsDto.setId(id);
             log.info("Updating report reason successful");
@@ -101,9 +101,9 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public ReportReasonsDto getById(int id) {
+    public ReportReasonsDTO getById(int id) {
         log.info("Getting report reason");
-        ReportReasonsDto reportReasonsDto = null;
+        ReportReasonsDTO reportReasonsDto = null;
         try {
             Optional<ReportReasonsDomain> reportReasonsDomainOptional = reportReasonsDao.findById(id);
             if (reportReasonsDomainOptional.isPresent() && !reportReasonsDomainOptional.get().getIsDeleted()) {
@@ -119,7 +119,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public Page<ReportReasonsDto> getAllReportReasons(Pageable pageable, String description) {
+    public Page<ReportReasonsDTO> getAllReportReasons(Pageable pageable, String description) {
         log.info("Getting all report reasons");
         if (description == null ) {
             Page<ReportReasonsDomain> reportReasonsPage =  reportReasonsDao.findAllByIsDeletedFalse(pageable);
