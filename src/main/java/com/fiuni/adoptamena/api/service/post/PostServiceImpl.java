@@ -202,4 +202,5 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDto> implem
         }
         return postDomain;
     }
+
 }
