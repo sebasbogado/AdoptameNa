@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.dto;
+package com.fiuni.adoptamena.api.dto.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostTypeDto implements Serializable {
+public class PostTypeDTO implements Serializable {
 
 
     @Serial
@@ -22,5 +22,4 @@ public class PostTypeDto implements Serializable {
 
     private String description;
 
-    private Boolean isDeleted;
 }

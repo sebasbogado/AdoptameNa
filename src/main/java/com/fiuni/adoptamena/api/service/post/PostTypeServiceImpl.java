@@ -2,7 +2,7 @@ package com.fiuni.adoptamena.api.service.post;
 
 import com.fiuni.adoptamena.api.dao.post.IPostTypeDao;
 import com.fiuni.adoptamena.api.domain.post.PostTypeDomain;
-import com.fiuni.adoptamena.api.dto.PostTypeDto;
+import com.fiuni.adoptamena.api.dto.post.PostTypeDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import org.slf4j.Logger;
@@ -17,36 +17,36 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTypeDto> implements IPostTypeService {
+public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTypeDTO> implements IPostTypeService {
 
     private static final Logger log = LoggerFactory.getLogger(PostTypeServiceImpl.class);
     @Autowired
     IPostTypeDao postTypeDao;
 
     @Override
-    public PostTypeDto save(PostTypeDto postTypeDto) {
+    public PostTypeDTO save(PostTypeDTO postTypeDto) {
 
-        PostTypeDto savedPostTypeDto = null;
+        PostTypeDTO savedPostTypeDTO = null;
         try {
             PostTypeDomain postTypeDomain =  convertDtoToDomain(postTypeDto);
             PostTypeDomain savedPostType = postTypeDao.save(postTypeDomain);
             log.info("PostType save successful");
 
-            savedPostTypeDto = convertDomainToDto(savedPostType);
+            savedPostTypeDTO = convertDomainToDto(savedPostType);
         }catch (Exception e){
-             new ErrorResponse("Error creating a Post Type", e.getMessage());
+             new ErrorResponse("Error creating a post Type", e.getMessage());
         }
-        return savedPostTypeDto;
+        return savedPostTypeDTO;
     }
 
     @Override
-    public PostTypeDto updateById(int id, PostTypeDto postTypeDto) {
+    public PostTypeDTO updateById(int id, PostTypeDTO postTypeDto) {
         try {
             postTypeDto.setId(id);
             log.info("PostType update successful");
         }
         catch (Exception e){
-            new ErrorResponse("Error updating a Post Type", e.getMessage());
+            new ErrorResponse("Error updating a post Type", e.getMessage());
         }
         return save(postTypeDto);
     }
@@ -56,24 +56,24 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
         log.info("Deleting PostType");
         try {
             PostTypeDomain postTypeDomain = postTypeDao.findById(id).orElse(null);
-            if (postTypeDomain != null) {
+            if (postTypeDomain != null && !postTypeDomain.getIsDeleted()) {
                 //postTypeDao.delete(postTypeDomain);// descomentar para borrar en la base de datos
                 postTypeDomain.setIsDeleted(true);   // comentar para borrar en la base de datos
                 postTypeDao.save(postTypeDomain);    // comentar para borrar en la base de datos
                 log.info("PostType delete successful");
             }
         } catch (Exception e){
-            new ErrorResponse("Error deleting a Post Type", e.getMessage());
+            new ErrorResponse("Error deleting a post Type", e.getMessage());
         }
     }
 
     @Override
-    public PostTypeDto getById(int id) {
+    public PostTypeDTO getById(int id) {
         log.info("Get PostType by id");
-        PostTypeDto postTypeDto = null;
+        PostTypeDTO postTypeDto = null;
         try {
             Optional<PostTypeDomain> postTypeDomainOptional = postTypeDao.findById(id);
-            if (postTypeDomainOptional.isPresent()) {
+            if (postTypeDomainOptional.isPresent() && postTypeDomainOptional.get().getIsDeleted()) {
                 PostTypeDomain postTypeDomain = postTypeDomainOptional.get();
 
                 postTypeDto = convertDomainToDto(postTypeDomain);
@@ -81,13 +81,13 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
             }
         }
         catch (Exception e){
-            new ErrorResponse("Error getting a Post Type", e.getMessage());
+            new ErrorResponse("Error getting a post Type", e.getMessage());
         }
         return postTypeDto;
     }
 
     @Override
-    public Page<PostTypeDto> getAllPostTypes(Pageable pageable, String name, String description) {
+    public Page<PostTypeDTO> getAllPostTypes(Pageable pageable, String name, String description) {
         log.info("Get All PostType");
         if (name == null && description == null) {
 
@@ -95,33 +95,33 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
             return postTypesPage.map(this::convertDomainToDto);
         }
 
-        Page<PostTypeDomain> postTypesPage = postTypeDao.findByNameContainingAndDescriptionContaining(name, description, pageable);
+        Page<PostTypeDomain> postTypesPage = postTypeDao.findByNameContainingAndDescriptionContainingAAndIsDeletedFalse(name, description, pageable);
 
         return postTypesPage.map(this::convertDomainToDto);
     }
 
     @Override
-    protected PostTypeDto convertDomainToDto(PostTypeDomain postTypeDomain) {
-       log.info("Converting PostTypeDomain to PostTypeDto");
+    protected PostTypeDTO convertDomainToDto(PostTypeDomain postTypeDomain) {
+       log.info("Converting PostTypeDomain to PostTypeDTO");
 
-        PostTypeDto postTypeDto = null;
+        PostTypeDTO postTypeDto = null;
         try {
-            postTypeDto = new PostTypeDto();
+            postTypeDto = new PostTypeDTO();
             postTypeDto.setId(postTypeDomain.getId());
             postTypeDto.setName(postTypeDomain.getName());
             postTypeDto.setDescription(postTypeDomain.getDescription());
 
         }
         catch (Exception e){
-            log.info("Error converting PostTypeDomain to PostTypeDto");
-            new ErrorResponse("Error converting PostTypeDomain to PostTypeDto", e.getMessage());
+            log.info("Error converting PostTypeDomain to PostTypeDTO");
+            new ErrorResponse("Error converting PostTypeDomain to PostTypeDTO", e.getMessage());
         }
         return postTypeDto;
     }
 
     @Override
-    protected PostTypeDomain convertDtoToDomain(PostTypeDto postTypeDto) {
-        log.info("Converting PostTypeDto to PostTypeDomain");
+    protected PostTypeDomain convertDtoToDomain(PostTypeDTO postTypeDto) {
+        log.info("Converting PostTypeDTO to PostTypeDomain");
 
         PostTypeDomain postTypeDomain = null;
         try {
@@ -129,10 +129,12 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
             postTypeDomain.setId(postTypeDto.getId());
             postTypeDomain.setName(postTypeDto.getName());
             postTypeDomain.setDescription(postTypeDto.getDescription());
+
+            postTypeDomain.setIsDeleted(false);
         }
         catch (Exception e){
-            log.info("Error converting PostTypeDto to PostTypeDomain");
-            new ErrorResponse("Error converting PostTypeDto to PostTypeDomain", e.getMessage());
+            log.info("Error converting PostTypeDTO to PostTypeDomain");
+            new ErrorResponse("Error converting PostTypeDTO to PostTypeDomain", e.getMessage());
         }
         return postTypeDomain;
     }

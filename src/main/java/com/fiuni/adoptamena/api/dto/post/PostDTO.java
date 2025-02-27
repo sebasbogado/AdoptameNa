@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.dto;
+package com.fiuni.adoptamena.api.dto.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class PostDto implements Serializable {
+public class PostDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
