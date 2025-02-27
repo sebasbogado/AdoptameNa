@@ -137,4 +137,8 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
         return postTypeDomain;
     }
 
+    @Override
+    public void save(int id){
+        return;
+    }
 }
