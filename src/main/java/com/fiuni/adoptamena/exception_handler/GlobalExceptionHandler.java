@@ -1,6 +1,7 @@
 package com.fiuni.adoptamena.exception_handler;
 
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import com.fiuni.adoptamena.exception_handler.exceptions.ForbiddenException;
 import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
 
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -22,15 +23,6 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    // Manejar excepciones generales que no han sido capturadas por manejadores
-    // específicos.
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
-        ErrorResponse errorDetails = new ErrorResponse("Ocurrió un error en el servidor",
-                request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     // Manejar excepciones cuando un recurso no es encontrado (Ej: usuario
     // inexistente, ID incorrecto).
@@ -122,5 +114,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGoneException(GoneException ex, WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.GONE);
+    }
+
+    // Manejar errores cuando se intenta acceder a un recurso que no está permitido
+    // (Ej: usuario no verificado).
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex, WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    // Manejar excepciones generales que no han sido capturadas por manejadores
+    // específicos.
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse("Ocurrió un error en el servidor",
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

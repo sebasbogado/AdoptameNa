@@ -22,7 +22,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.Forbidden;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.Set;
 
@@ -70,6 +72,7 @@ public class AuthService {
     
         // Verificar si la cuenta está verificada
         if (!user.getIsVerified()) {
+            log.info("Cuenta no verificada: {}", user.getEmail());
             throw new ForbiddenException("La cuenta no está verificada. Revisa tu email para verificar tu cuenta.");
         }
     
