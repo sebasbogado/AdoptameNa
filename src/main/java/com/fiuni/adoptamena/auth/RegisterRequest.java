@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
+    @NotBlank(message = "El nombre no puede estar vacío")
+    String fullName;
+
     @NotBlank(message = "El email no puede estar vacío")
     @Email(message = "Formato de email incorrecto")
     String email;
