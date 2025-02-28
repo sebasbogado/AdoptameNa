@@ -18,6 +18,6 @@ public class LoginRequest {
     String email;
 
     @NotBlank(message = "La contrasena no puede estar vacio")
-    @Size(min = 6, message = "La contrasena debe tener al menos 6 caracteres")
+    @Size(min = 8, message = "La contrasena debe tener al menos 8 caracteres")
     String password;
 }

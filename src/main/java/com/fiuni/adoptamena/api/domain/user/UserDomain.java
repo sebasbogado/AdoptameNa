@@ -26,7 +26,7 @@ public class UserDomain implements BaseDomain, UserDetails {
     @Column(name = "id_user", nullable = false, unique = true)
     private Integer id;
 
-    @Column(name = "str_username", nullable = false, length = 50, unique = true)
+    @Column(name = "str_username", nullable = false, length = 100, unique = true)
     private String username;
 
     @Column(name = "str_email", nullable = false, length = 100, unique = true)

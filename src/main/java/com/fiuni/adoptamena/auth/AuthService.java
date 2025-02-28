@@ -11,6 +11,7 @@ import com.fiuni.adoptamena.jwt.JwtService;
 
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Date;
 import java.util.Set;
 
@@ -130,14 +132,30 @@ public class AuthService {
                     .build();
 
         } catch (DataIntegrityViolationException e) {
-            log.error("Error al guardar usuario: posible duplicado", e);
-            throw new BadRequestException("El email ya está registrado");
+            Throwable cause = e.getMostSpecificCause();
+
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                // Si el error es por restricción UNIQUE
+                if (cause.getMessage().contains("usuarios_email_key")) {
+                    log.error("Intento de registro con email duplicado: {}", request.getEmail());
+                    throw new BadRequestException("El email ya está registrado");
+                }
+            }
+
+            log.error("Error de integridad en la base de datos", e);
+            throw new BadRequestException("Violación de integridad de datos");
+
+        } catch (ConstraintViolationException e) {
+            log.error("Error de validación de datos: {}", e.getConstraintViolations());
+            throw new BadRequestException("Datos inválidos: " + e.getMessage());
+
         } catch (PersistenceException e) {
             log.error("Error de persistencia en la base de datos", e);
             throw new RuntimeException("Error de persistencia en la base de datos.");
+
         } catch (Exception e) {
             log.error("Error inesperado al registrar usuario", e);
-            throw new RuntimeException("Error al registrar usuario");
+            throw new RuntimeException("Error inesperado al registrar usuario.");
         }
     }
 

@@ -2,6 +2,7 @@ package com.fiuni.adoptamena.auth;
 
 import jakarta.validation.Valid;
 
+import com.fiuni.adoptamena.exception_handler.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Tag(name="Auth")
+@Tag(name = "Auth")
 public class AuthController {
 
     @Autowired
@@ -32,7 +33,7 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException("Invalid login request");
+            throw new BadRequestException(bindingResult.getAllErrors());
         }
         return ResponseEntity.ok(authService.login(request));
     }
@@ -42,7 +43,7 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest request,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException("Invalid registration request");
+            throw new BadRequestException(bindingResult.getAllErrors());
         }
         return ResponseEntity.ok(authService.register(request, sendEmail));
     }
