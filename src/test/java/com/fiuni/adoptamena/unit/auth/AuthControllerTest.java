@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.auth.integration;
+package com.fiuni.adoptamena.unit.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class AuthControllerIntegrationTest {
+class AuthControllerTest {
 
         @Autowired
         private MockMvc mockMvc;

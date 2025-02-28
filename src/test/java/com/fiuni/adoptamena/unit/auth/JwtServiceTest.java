@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.auth.unit;
+package com.fiuni.adoptamena.unit.auth;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
