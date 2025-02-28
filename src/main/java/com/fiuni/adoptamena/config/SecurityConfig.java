@@ -41,8 +41,15 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .cors(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(authRequest -> authRequest
-                                                .requestMatchers("/auth/**").permitAll()
-                                                .anyRequest().authenticated())
+                                .requestMatchers(
+                                    "/auth/**",                      // Permitir endpoints de autenticación
+                                    "/swagger-ui/**",                // Permitir Swagger UI
+                                    "/swagger-ui.html",              // Página principal de Swagger
+                                    "/v3/api-docs/**",               // Documentación OpenAPI
+                                    "/v3/api-docs/swagger-config",   // Configuración de Swagger
+                                    "/webjars/**"                     // Recursos estáticos de Swagger
+                                ).permitAll()
+                                .anyRequest().authenticated())
                                 .exceptionHandling(exceptions -> exceptions
                                                 .authenticationEntryPoint(authenticationEntryPoint)
                                                 .accessDeniedHandler(accessDeniedHandler))
