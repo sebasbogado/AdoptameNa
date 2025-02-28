@@ -62,24 +62,23 @@ public class AuthService {
         } catch (Exception e) {
             throw new BadCredentialsException("Email o contraseña incorrectos.");
         }
-    
+
         // Buscar el usuario en la base de datos
         UserDomain user = userDao.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado con el email: " + request.getEmail()));
-    
+
         // Verificar si la cuenta está verificada
         if (!user.getIsVerified()) {
             log.info("Cuenta no verificada: {}", user.getEmail());
             throw new ForbiddenException("La cuenta no está verificada. Revisa tu email para verificar tu cuenta.");
         }
-    
+
         // Generar y devolver el token de autenticación
         return AuthResponse.builder()
                 .token(jwtService.getToken(user))
                 .build();
     }
-    
 
     @Transactional
     public GenericResponse register(RegisterRequest request, boolean sendEmail) {
@@ -108,6 +107,8 @@ public class AuthService {
             // Crear perfil vacío asociado al usuario
             ProfileDTO profile = new ProfileDTO();
             profile.setId(user.getId());
+            profile.setFullName(request.getFullName());
+            profile.setOrganizationName(request.getOrganizationName());
             profileService.save(profile);
 
             // Enviar email de verificación si es necesario
