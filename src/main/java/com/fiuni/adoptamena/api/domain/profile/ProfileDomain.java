@@ -28,16 +28,16 @@ public class ProfileDomain implements BaseDomain {
     @JoinColumn(name = "id_profile")
     private UserDomain user;
 
-    @Column(name="str_organization_name")
+    @Column(name="str_organization_name", length = 100)
     private String organizationName;
 
-    @Column(name="str_full_name")
+    @Column(name="str_full_name", length = 100)
     private String fullName;
 
-    @Column(name="str_address")
+    @Column(name="str_address", length = 255)
     private String address;
 
-    @Column(name="str_description")
+    @Column(name="str_description", length = 500)
     private String description;
 
     @Column(name="str_gender")
@@ -46,10 +46,10 @@ public class ProfileDomain implements BaseDomain {
     @Column(name="date_birthdate")
     private Date birthdate;
 
-    @Column(name="str_document")
+    @Column(name="str_document", length = 30)
     private String document;
 
-    @Column(name="str_phone_number")
+    @Column(name="str_phone_number", length = 15)
     private String phoneNumber;
 
     @Column(name="int_earned_points")
@@ -58,6 +58,6 @@ public class ProfileDomain implements BaseDomain {
     @Column(name = "bool_deleted")
     private Boolean isDeleted;
 
-    @Column(name="str_address_coordinates")
+    @Column(name="str_address_coordinates", length = 255)
     private String addressCoordinates;
 }
