@@ -109,8 +109,6 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
-        domain.setFullName(domain.getUser().getEmail());
-        domain.setOrganizationName(null);
         domain.setAddress(null);
         domain.setDescription(null);
         domain.setBirthdate(null);

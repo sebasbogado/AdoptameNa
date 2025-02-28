@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
+    String organizationName;
+
     @NotBlank(message = "El nombre no puede estar vacío")
     String fullName;
 

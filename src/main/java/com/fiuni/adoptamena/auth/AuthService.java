@@ -108,6 +108,7 @@ public class AuthService {
             ProfileDTO profile = new ProfileDTO();
             profile.setId(user.getId());
             profile.setFullName(request.getFullName());
+            profile.setOrganizationName(request.getOrganizationName());
             profileService.save(profile);
 
             // Enviar email de verificación si es necesario

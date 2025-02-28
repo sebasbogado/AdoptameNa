@@ -39,7 +39,7 @@ class AuthControllerTest {
                 String email = "usertest@example.com";
                 String password = "password123";
                 String role = "USER";
-                RegisterRequest registerRequest = new RegisterRequest(fullName, email, password, role);
+                RegisterRequest registerRequest = new RegisterRequest(null, fullName, email, password, role);
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +65,7 @@ class AuthControllerTest {
                 String email = "usertest@example.com";
                 String password = "password123";
                 String role = "USER";
-                RegisterRequest registerRequest = new RegisterRequest(fullName, email, password, role);
+                RegisterRequest registerRequest = new RegisterRequest(null, fullName, email, password, role);
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +83,8 @@ class AuthControllerTest {
 
         @Test
         void testRegisterWithInvalidRole() throws Exception {
-                RegisterRequest request = new RegisterRequest("Valid Username", "valid@example.com", "password123",
+                RegisterRequest request = new RegisterRequest(null, "Valid Username", "valid@example.com",
+                                "password123",
                                 "Invalid");
 
                 mockMvc.perform(post("/auth/register")
@@ -98,7 +99,7 @@ class AuthControllerTest {
                 String email = "existing@example.com";
                 String password = "password123";
                 String role = "USER";
-                RegisterRequest request = new RegisterRequest(fullName, email, password, role);
+                RegisterRequest request = new RegisterRequest(null, fullName, email, password, role);
 
                 // Registrar un usuario
                 mockMvc.perform(post("/auth/register")
@@ -126,7 +127,8 @@ class AuthControllerTest {
 
         @Test
         void testRegisterWithInvalidEmail() throws Exception {
-                RegisterRequest request = new RegisterRequest("Valid Username", "invalidemail", "password123", "USER");
+                RegisterRequest request = new RegisterRequest(null, "Valid Username", "invalidemail", "password123",
+                                "USER");
 
                 // Intentar registrar un usuario con email inválido
                 mockMvc.perform(post("/auth/register")
@@ -137,7 +139,8 @@ class AuthControllerTest {
 
         @Test
         void testRegisterWithShortPassword() throws Exception {
-                RegisterRequest request = new RegisterRequest("Valid Username", "valid@example.com", "123", "USER");
+                RegisterRequest request = new RegisterRequest(null, "Valid Username", "valid@example.com", "123",
+                                "USER");
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
