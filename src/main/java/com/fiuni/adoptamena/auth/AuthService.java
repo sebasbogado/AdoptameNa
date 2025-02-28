@@ -108,7 +108,16 @@ public class AuthService {
             ProfileDTO profile = new ProfileDTO();
             profile.setId(user.getId());
             profile.setFullName(request.getFullName());
-            profile.setOrganizationName(request.getOrganizationName());
+
+            // Guardar nombre de la organización si es necesario
+            if (roleName.equals("ORGANIZATION")) {
+                if (request.getOrganizationName() == null) {
+                    throw new BadRequestException(
+                            "El nombre de la organización es requerido para el rol 'ORGANIZATION'");
+                }
+                profile.setOrganizationName(request.getOrganizationName());
+
+            }
             profileService.save(profile);
 
             // Enviar email de verificación si es necesario
