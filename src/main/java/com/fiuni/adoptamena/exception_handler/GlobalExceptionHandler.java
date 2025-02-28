@@ -4,6 +4,9 @@ import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.exception_handler.exceptions.ForbiddenException;
 import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
 
+import jakarta.validation.ConstraintViolationException;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -122,6 +125,31 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex, WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    // Capturar violaciones de restricción de la base de datos (longitud de columna,
+    // claves únicas, etc.)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex,
+            WebRequest request) {
+        Throwable rootCause = ex.getRootCause();
+        String message = "Violación de integridad de datos. Uno de los campos puede estar excediendo el tamaño permitido.";
+
+        if (rootCause instanceof ConstraintViolationException) {
+            message = "Error de base de datos: " + rootCause.getMessage();
+        }
+
+        ErrorResponse errorDetails = new ErrorResponse(message, request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    // Capturar errores de validación a nivel de entidad antes de persistencia
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex,
+            WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse("Error de validación: " + ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     // Manejar excepciones generales que no han sido capturadas por manejadores

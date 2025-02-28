@@ -68,9 +68,15 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     public ProfileDTO save(ProfileDTO profile) {
         log.info("Creando perfil {}");
         ProfileDomain domain = new ProfileDomain();
+
         domain.setUser(userDao.findByIdAndIsDeletedFalse(profile.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
 
+        // Campos recibidos en el request
+        domain.setFullName(profile.getFullName());
+        domain.setOrganizationName(profile.getOrganizationName());
+
+        // Campos por defecto (todo null)
         setDefaultAttributes(domain);
         log.info("Usuario a guardar, {}", domain);
         return convertDomainToDto(profileDao.save(domain));
