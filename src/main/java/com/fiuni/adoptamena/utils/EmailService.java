@@ -26,13 +26,12 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject("Confirma tu cuenta en Adoptamena");
 
-            // URL de la imagen (coloca la tuya)
-            String imageUrl = "https://tudominio.com/logo-adoptamena.png";
+            String imageUrl = "https://i.imgur.com/hyzAvP8.png";
 
             // HTML con imagen + mensaje mejorado
             String htmlContent = "<div style='font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;'>"
                     + "<div style='max-width: 500px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); margin: auto;'>"
-                    + "<img src='" + imageUrl + "' alt='Adoptamena' style='width: 100px; margin-top: 20px;'>"
+                    + "<img src='" + imageUrl + "' alt='Adoptamena' style='width: 300px; margin-top: 20px;'>"
                     + "<h2 style='color: #333;'>¡Gracias por unirte a Adoptamena!</h2>"
                     + "<p style='font-size: 16px; color: #555;'>Gracias por unirte a la comunidad de Adoptamena y ser parte del cambio.</p>"
                     + "<p style='font-size: 16px; color: #555;'>Para empezar, da clic en el botón de abajo:</p>"
