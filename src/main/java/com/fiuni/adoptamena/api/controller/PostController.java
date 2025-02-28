@@ -1,6 +1,5 @@
 package com.fiuni.adoptamena.api.controller;
 
-import ch.qos.logback.core.boolex.EvaluationException;
 import com.fiuni.adoptamena.api.dto.PostDto;
 import com.fiuni.adoptamena.api.service.post.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping({"", "/"})
+    @GetMapping({ "", "/" })
     public ResponseEntity<Page<PostDto>> getAllPosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -41,24 +40,24 @@ public class PostController {
 
         Page<PostDto> postsPage = postService.getAllPosts(pageable, title, content, userId, postTypeId);
 
-
         return ResponseEntity.ok(postsPage);
     }
 
-    @PostMapping({"", "/"})
+    @PostMapping({ "", "/" })
     public ResponseEntity<PostDto> create(@RequestBody() PostDto postDto) {
 
         PostDto data = this.postService.save(postDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
-    @PutMapping({"/{id}"})
-    public ResponseEntity<PostDto> update(@PathVariable(name = "id", required = true) int id, @RequestBody() PostDto postDto) {
+    @PutMapping({ "/{id}" })
+    public ResponseEntity<PostDto> update(@PathVariable(name = "id", required = true) int id,
+            @RequestBody() PostDto postDto) {
         PostDto data = this.postService.updateById(id, postDto);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @DeleteMapping({"/{id}"})
+    @DeleteMapping({ "/{id}" })
     public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) int id) {
         this.postService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Post with id: " + id + "was deleted");
@@ -69,11 +68,9 @@ public class PostController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
-            @RequestParam(value = "keyword") String keyword
-    ) {
+            @RequestParam(value = "keyword") String keyword) {
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
-
 
         Page<PostDto> postsPage = postService.searchPostByKeyword(pageable, keyword);
 
