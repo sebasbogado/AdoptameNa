@@ -1,7 +1,7 @@
 package com.fiuni.adoptamena.api.domain.user;
 
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
-import com.fiuni.adoptamena.api.domain.profile.Profile;
+import com.fiuni.adoptamena.api.domain.profile.ProfileDomain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +19,7 @@ import java.util.*;
 public class UserDomain implements BaseDomain, UserDetails {
 
     @Serial
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,10 +43,13 @@ public class UserDomain implements BaseDomain, UserDetails {
     private RoleDomain role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Profile profile;
+    private ProfileDomain profile;
+
+    @Column(name = "bool_verified", nullable = false)
+    private Boolean isVerified;
 
     @Column(name = "bool_deleted", nullable = false)
-    private Boolean deleted;
+    private Boolean isDeleted;
 
     // UserDetails methods
     @Override

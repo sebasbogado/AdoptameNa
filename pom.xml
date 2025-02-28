@@ -88,6 +88,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Dependencia para enviar correos electrónicos -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- Dependencias para pruebas -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -104,7 +110,12 @@
             <artifactId>junit-platform-suite</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <!--Swagger-->
+        <dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version>
+		</dependency>
     </dependencies>
 
     <build>

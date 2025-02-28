@@ -3,10 +3,14 @@ package com.fiuni.adoptamena.auth;
 import com.fiuni.adoptamena.api.dao.user.IRoleDao;
 import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
+import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
+import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import com.fiuni.adoptamena.exception_handler.exceptions.ForbiddenException;
 import com.fiuni.adoptamena.jwt.JwtService;
 
 import jakarta.persistence.PersistenceException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,12 +19,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -42,61 +46,99 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private IProfileService profileService;
+
+    @Autowired
+    private VerificationTokenService verificationTokenService;
+
+    private static final Set<String> VALID_ROLES = Set.of("USER", "ORGANIZATION");
+
     public AuthResponse login(LoginRequest request) {
+        // Autenticar al usuario con email y contraseña
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         } catch (Exception e) {
-            throw new BadCredentialsException("Email o contraseña incorrectos.", e);
+            throw new BadCredentialsException("Email o contraseña incorrectos.");
         }
 
-        UserDetails user = userDao.findByEmail(request.getEmail())
+        // Buscar el usuario en la base de datos
+        UserDomain user = userDao.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado con el email: " + request.getEmail()));
 
-        String token = jwtService.getToken(user);
+        // Verificar si la cuenta está verificada
+        if (!user.getIsVerified()) {
+            log.info("Cuenta no verificada: {}", user.getEmail());
+            throw new ForbiddenException("La cuenta no está verificada. Revisa tu email para verificar tu cuenta.");
+        }
+
+        // Generar y devolver el token de autenticación
         return AuthResponse.builder()
-                .token(token)
+                .token(jwtService.getToken(user))
                 .build();
     }
 
-    public AuthResponse register(RegisterRequest request) {
-        // Validar el role
-        if (!("USER".equalsIgnoreCase(request.getRole()) || "ORGANIZATION".equalsIgnoreCase(request.getRole()))) {
+    @Transactional
+    public GenericResponse register(RegisterRequest request, boolean sendEmail) {
+        // Validar el rol antes de continuar
+        String roleName = request.getRole().toUpperCase();
+        if (!VALID_ROLES.contains(roleName)) {
             throw new BadRequestException("Rol inválido. Debe ser 'USER' o 'ORGANIZATION'");
         }
 
-        // Crear el usuario
-        UserDomain user = new UserDomain();
-        user.setUsername(request.getEmail());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        // Obtener el rol
-        user.setRole(roleDao.findByName(request.getRole().toLowerCase())
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.getRole())));
-
-        user.setDeleted(false);
-        user.setCreationDate(new Date());
-
-        // Guardar el usuario
         try {
+            // Crear usuario
+            UserDomain user = new UserDomain();
+            user.setUsername(request.getEmail());
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRole(
+                    roleDao.findByName(roleName.toLowerCase())
+                            .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleName)));
+            user.setIsDeleted(false);
+            user.setIsVerified(false);
+            user.setCreationDate(new Date());
+
+            // Guardar usuario en la base de datos
             userDao.save(user);
+
+            // Crear perfil vacío asociado al usuario
+            ProfileDTO profile = new ProfileDTO();
+            profile.setId(user.getId());
+            profile.setFullName(request.getFullName());
+
+            // Guardar nombre de la organización si es necesario
+            if (roleName.equals("ORGANIZATION")) {
+                if (request.getOrganizationName() == null) {
+                    throw new BadRequestException(
+                            "El nombre de la organización es requerido para el rol 'ORGANIZATION'");
+                }
+                profile.setOrganizationName(request.getOrganizationName());
+
+            }
+            profileService.save(profile);
+
+            // Enviar email de verificación si es necesario
+            if (sendEmail) {
+                verificationTokenService.sendVerificationEmail(user.getEmail());
+            }
+
+            return GenericResponse.builder()
+                    .message("Usuario registrado exitosamente. Revisa tu email para verificar tu cuenta.")
+                    .build();
+
         } catch (DataIntegrityViolationException e) {
-            log.error("Error al guardar usuario. Usuario ya existente", e);
-            throw new BadRequestException("Usuario ya existente");
+            log.error("Error al guardar usuario: posible duplicado", e);
+            throw new BadRequestException("El email ya está registrado");
         } catch (PersistenceException e) {
             log.error("Error de persistencia en la base de datos", e);
-            throw new BadRequestException("Error de persistencia en la base de datos.");
+            throw new RuntimeException("Error de persistencia en la base de datos.");
         } catch (Exception e) {
-            log.error("Error al guardar usuario", e);
-            throw new RuntimeException("Error al guardar usuario");
+            log.error("Error inesperado al registrar usuario", e);
+            throw new RuntimeException("Error al registrar usuario");
         }
-
-        // Crear la respuesta
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setToken(jwtService.getToken(user));
-        return authResponse;
     }
 
 }
