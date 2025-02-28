@@ -4,7 +4,6 @@ import com.fiuni.adoptamena.api.dao.post.IReportReasonsDao;
 import com.fiuni.adoptamena.api.domain.post.ReportReasonsDomain;
 import com.fiuni.adoptamena.api.dto.post.ReportReasonsDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
-import com.fiuni.adoptamena.exception_handler.ErrorResponse;
 import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,8 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomain, ReportReasonsDTO> implements IReportReasonsService {
+public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomain, ReportReasonsDTO>
+        implements IReportReasonsService {
 
     private static final Logger log = LoggerFactory.getLogger(PostTypeServiceImpl.class);
 
@@ -37,7 +37,8 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
         } catch (Exception e) {
             log.info("Error converting ReportReasonsDomain to ReportReasonsDTO");
             throw new ResourceNotFoundException("Error converting ReportReasonsDomain to ReportReasonsDTO");
-            //new ErrorResponse("Error converting ReportReasonsDomain to ReportReasonDto", e.getMessage());
+            // new ErrorResponse("Error converting ReportReasonsDomain to ReportReasonDto",
+            // e.getMessage());
         }
         return reportReasonsDto;
     }
@@ -52,10 +53,11 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
             reportReasonsDomain.setDescription(reportReasonsDto.getDescription());
 
             reportReasonsDomain.setIsDeleted(false);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.info("Error converting ReportReasonsDTO to ReportReasonsDomain");
             throw new ResourceNotFoundException("Error converting ReportReasonsDTO to ReportReasonsDomain");
-            //new ErrorResponse("Error converting ReportReasonsDTO to ReportReasonsDomain", e.getMessage());
+            // new ErrorResponse("Error converting ReportReasonsDTO to ReportReasonsDomain",
+            // e.getMessage());
         }
         return reportReasonsDomain;
     }
@@ -73,7 +75,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
         } catch (Exception e) {
             log.info("Error saving ReportReasonsDTO");
             throw new ResourceNotFoundException("Error creating a Report Reason");
-            //new ErrorResponse("Error creating a Report Reason.", e.getMessage());
+            // new ErrorResponse("Error creating a Report Reason.", e.getMessage());
         }
         return savedReportReasonDto;
     }
@@ -83,10 +85,10 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
         try {
             reportReasonsDto.setId(id);
             log.info("Updating report reason successful");
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.info("Error updating ReportReasonsDTO");
             throw new ResourceNotFoundException("Error updating report reason");
-            //new ErrorResponse("Error updating report reason.", e.getMessage());
+            // new ErrorResponse("Error updating report reason.", e.getMessage());
         }
         return save(reportReasonsDto);
     }
@@ -97,15 +99,16 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
         try {
             ReportReasonsDomain reportReasonsDomain = reportReasonsDao.findById(id).orElse(null);
             if (reportReasonsDomain != null && !reportReasonsDomain.getIsDeleted()) {
-                //reportReasonsDao.delete(reportReasonsDomain); //descomentar para borrar en la base de datos
-                reportReasonsDomain.setIsDeleted(true);         //comentar para borrar en la basse de datos
-                reportReasonsDao.save(reportReasonsDomain);     //comentar para borrar en la basse de datos
+                // reportReasonsDao.delete(reportReasonsDomain); //descomentar para borrar en la
+                // base de datos
+                reportReasonsDomain.setIsDeleted(true); // comentar para borrar en la basse de datos
+                reportReasonsDao.save(reportReasonsDomain); // comentar para borrar en la basse de datos
                 log.info("Report reason delete successful");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.info("Error deleting ReportReasonsDTO");
             throw new ResourceNotFoundException("Error deleting ReportReasonsDTO");
-            //new ErrorResponse("Error deleting report reason.", e.getMessage());
+            // new ErrorResponse("Error deleting report reason.", e.getMessage());
         }
     }
 
@@ -121,10 +124,10 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
                 reportReasonsDto = convertDomainToDto(reportReasonsDomain);
                 log.info("Report reason get successful");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.info("Error getting ReportReasonsDTO");
             throw new ResourceNotFoundException("Error getting ReportReasonsDTO");
-            //new ErrorResponse("Error getting report reason.", e.getMessage());
+            // new ErrorResponse("Error getting report reason.", e.getMessage());
         }
         return reportReasonsDto;
     }
@@ -132,12 +135,13 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     @Override
     public Page<ReportReasonsDTO> getAllReportReasons(Pageable pageable, String description) {
         log.info("Getting all report reasons");
-        if (description == null ) {
-            Page<ReportReasonsDomain> reportReasonsPage =  reportReasonsDao.findAllByIsDeletedFalse(pageable);
+        if (description == null) {
+            Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao.findAllByIsDeletedFalse(pageable);
             return reportReasonsPage.map(this::convertDomainToDto);
         }
 
-        Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao.findByDescriptionContainingAndIsDeletedFalse(description, pageable);
+        Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao
+                .findByDescriptionContainingAndIsDeletedFalse(description, pageable);
         return reportReasonsPage.map(this::convertDomainToDto);
     }
 }
