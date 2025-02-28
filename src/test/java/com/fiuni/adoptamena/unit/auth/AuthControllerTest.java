@@ -1,8 +1,10 @@
-package com.fiuni.adoptamena.auth.integration;
+package com.fiuni.adoptamena.unit.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.auth.LoginRequest;
 import com.fiuni.adoptamena.auth.RegisterRequest;
+import com.fiuni.adoptamena.api.dao.user.IUserDao;
 
 import jakarta.transaction.Transactional;
 
@@ -20,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class AuthControllerIntegrationTest {
+class AuthControllerTest {
 
         @Autowired
         private MockMvc mockMvc;
@@ -28,18 +30,26 @@ class AuthControllerIntegrationTest {
         @Autowired
         private ObjectMapper objectMapper;
 
+        @Autowired
+        private IUserDao IUserDao;
+
         @Test
-        void testRegisterAndLoginFlow() throws Exception {
+        void testRegisterAndLoginFlowWithVerifiedAcc() throws Exception {
+                String fullName = "User Test";
                 String email = "usertest@example.com";
                 String password = "password123";
                 String role = "USER";
-                RegisterRequest registerRequest = new RegisterRequest(email, password, role);
+                RegisterRequest registerRequest = new RegisterRequest(null, fullName, email, password, role);
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(registerRequest)))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.token").exists());
+                                .andExpect(jsonPath("$.message").exists());
+
+                UserDomain createdUser = IUserDao.findByEmail(email).orElseThrow();
+                createdUser.setIsVerified(true);
+                IUserDao.save(createdUser);
 
                 LoginRequest loginRequest = new LoginRequest(email, password);
                 mockMvc.perform(post("/auth/login")
@@ -50,8 +60,32 @@ class AuthControllerIntegrationTest {
         }
 
         @Test
+        void testRegisterAndLoginFlowWithoutVerifiedAcc() throws Exception {
+                String fullName = "User Test";
+                String email = "usertest@example.com";
+                String password = "password123";
+                String role = "USER";
+                RegisterRequest registerRequest = new RegisterRequest(null, fullName, email, password, role);
+
+                mockMvc.perform(post("/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(registerRequest)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.message").exists());
+
+                LoginRequest loginRequest = new LoginRequest(email, password);
+                mockMvc.perform(post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest)))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.message").exists());
+        }
+
+        @Test
         void testRegisterWithInvalidRole() throws Exception {
-                RegisterRequest request = new RegisterRequest("valid@example.com", "password123", "Invalid");
+                RegisterRequest request = new RegisterRequest(null, "Valid Username", "valid@example.com",
+                                "password123",
+                                "Invalid");
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -61,16 +95,19 @@ class AuthControllerIntegrationTest {
 
         @Test
         void testRegisterWithExistingEmail() throws Exception {
+                String fullName = "User Test";
                 String email = "existing@example.com";
                 String password = "password123";
                 String role = "USER";
-                RegisterRequest request = new RegisterRequest(email, password, role);
+                RegisterRequest request = new RegisterRequest(null, fullName, email, password, role);
 
+                // Registrar un usuario
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isOk());
 
+                // Intentar registrar un usuario con el mismo email
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -81,6 +118,7 @@ class AuthControllerIntegrationTest {
         void testLoginWithInvalidCredentials() throws Exception {
                 LoginRequest loginRequest = new LoginRequest("nonexistent@example.com", "wrongpassword");
 
+                // Intentar iniciar sesión con credenciales inválidas
                 mockMvc.perform(post("/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(loginRequest)))
@@ -89,8 +127,10 @@ class AuthControllerIntegrationTest {
 
         @Test
         void testRegisterWithInvalidEmail() throws Exception {
-                RegisterRequest request = new RegisterRequest("invalidemail", "password123", "USER");
+                RegisterRequest request = new RegisterRequest(null, "Valid Username", "invalidemail", "password123",
+                                "USER");
 
+                // Intentar registrar un usuario con email inválido
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -99,7 +139,8 @@ class AuthControllerIntegrationTest {
 
         @Test
         void testRegisterWithShortPassword() throws Exception {
-                RegisterRequest request = new RegisterRequest("valid@example.com", "123", "USER");
+                RegisterRequest request = new RegisterRequest(null, "Valid Username", "valid@example.com", "123",
+                                "USER");
 
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
