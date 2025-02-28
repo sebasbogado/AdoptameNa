@@ -41,6 +41,7 @@ public class VerificationTokenService {
      */
     @Transactional
     public String createVerificationToken(UserDomain user) {
+        deleteToken(user);
         VerificationTokenDomain token = new VerificationTokenDomain(user);
         verificationTokenDao.save(token);
         return token.getToken();
@@ -88,7 +89,7 @@ public class VerificationTokenService {
         UserDomain user = verificationToken.getUser();
         user.setIsVerified(true);
 
-        verificationTokenDao.delete(verificationToken);
+        deleteToken(user);
 
         return GenericResponse.builder()
                 .message("Usuario verificado correctamente.")
@@ -106,6 +107,10 @@ public class VerificationTokenService {
                 .orElseThrow(() -> new BadRequestException("Usuario no encontrado."));
 
         deleteToken(user);
+
+        if (user.getIsVerified()) {
+            throw new BadRequestException("El usuario ya está verificado.");
+        }
 
         String token = createVerificationToken(user);
         emailService.sendVerificationEmail(user.getEmail(), BASE_VERIFICATION_LINK + token);
