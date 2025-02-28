@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/postTypes")
 @Tag(name = "PostType")
@@ -25,7 +26,7 @@ public class PostTypeController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping({"", "/"})
+    @GetMapping({ "", "/" })
     public ResponseEntity<Page<PostTypeDTO>> getAllPostTypes(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -44,22 +45,22 @@ public class PostTypeController {
         return ResponseEntity.ok(postTypesPage);
     }
 
-
-    @PostMapping({"", "/"})
+    @PostMapping({ "", "/" })
     public ResponseEntity<PostTypeDTO> create(@RequestBody() PostTypeDTO postTypeDto) {
 
         PostTypeDTO data = this.postTypeService.save(postTypeDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
-    @PutMapping({"/{id}"})
-    public ResponseEntity<PostTypeDTO> update(@PathVariable(name = "id", required = true) int id, @RequestBody() PostTypeDTO postTypeDto) {
+    @PutMapping({ "/{id}" })
+    public ResponseEntity<PostTypeDTO> update(@PathVariable(name = "id", required = true) int id,
+            @RequestBody() PostTypeDTO postTypeDto) {
 
         PostTypeDTO data = this.postTypeService.updateById(id, postTypeDto);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @DeleteMapping({"/{id}"})
+    @DeleteMapping({ "/{id}" })
     public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) int id) {
         this.postTypeService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("PostType with id: " + id + "was deleted");

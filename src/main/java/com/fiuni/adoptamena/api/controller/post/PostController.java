@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/posts")
 @Tag(name = "Post")
@@ -26,7 +27,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping({"", "/"})
+    @GetMapping({ "", "/" })
     public ResponseEntity<Page<PostDTO>> getAllPosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -42,24 +43,24 @@ public class PostController {
 
         Page<PostDTO> postsPage = postService.getAllPosts(pageable, title, content, userId, postTypeId);
 
-
         return ResponseEntity.ok(postsPage);
     }
 
-    @PostMapping({"", "/"})
+    @PostMapping({ "", "/" })
     public ResponseEntity<PostDTO> create(@RequestBody() PostDTO postDto) {
 
         PostDTO data = this.postService.save(postDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
-    @PutMapping({"/{id}"})
-    public ResponseEntity<PostDTO> update(@PathVariable(name = "id", required = true) int id, @RequestBody() PostDTO postDto) {
+    @PutMapping({ "/{id}" })
+    public ResponseEntity<PostDTO> update(@PathVariable(name = "id", required = true) int id,
+            @RequestBody() PostDTO postDto) {
         PostDTO data = this.postService.updateById(id, postDto);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @DeleteMapping({"/{id}"})
+    @DeleteMapping({ "/{id}" })
     public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) int id) {
         this.postService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("post with id: " + id + "was deleted");
@@ -70,11 +71,9 @@ public class PostController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
-            @RequestParam(value = "keyword") String keyword
-    ) {
+            @RequestParam(value = "keyword") String keyword) {
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
-
 
         Page<PostDTO> postsPage = postService.searchPostByKeyword(pageable, keyword);
 
