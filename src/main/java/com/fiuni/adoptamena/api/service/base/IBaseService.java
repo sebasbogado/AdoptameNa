@@ -1,13 +1,17 @@
 package com.fiuni.adoptamena.api.service.base;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IBaseService<D, DTO> {
 
-    DTO save(DTO dto);
+    public DTO getById(Integer id);
 
-    DTO updateById(int id, DTO dto);
+    Page<DTO> getAll(Pageable pageable);
 
-    void deleteById(int id);
+    void delete(Integer id);
 
-    DTO getById(int id);
+    public abstract DTO create(DTO dto);
+
+    public abstract DTO update(DTO dto);
 }
