@@ -35,13 +35,13 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        ProfileDTO result = profileService.updateById(id, profile);
+        ProfileDTO result = profileService.update( profile);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMethodName(@PathVariable Integer id) {
-        profileService.deleteById(id);
+        profileService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
