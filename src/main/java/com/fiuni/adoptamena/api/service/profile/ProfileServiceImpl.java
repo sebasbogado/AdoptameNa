@@ -123,9 +123,9 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     @Override
-    public Page<ProfileDTO> getAll(Pageable pageable) {
+    public List<ProfileDTO> getAll(Pageable pageable) {
         Page<ProfileDomain> page = profileDao.findAllByIsDeletedFalse(pageable);
-        return page.map(this::convertDomainToDto);
+        return convertDomainListToDtoList( page.getContent());
     }
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
