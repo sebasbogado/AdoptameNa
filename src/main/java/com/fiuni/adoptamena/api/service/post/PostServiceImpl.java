@@ -169,7 +169,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             postDto.setStatus(postDomain.getStatus());
 
             if (postDomain.getUser() != null && postDomain.getUser().getId() != null) {
-                postDto.setId_user(postDomain.getUser().getId());
+                postDto.setIdUser(postDomain.getUser().getId());
             } else {
                 log.info("User not found");
                 throw new ResourceNotFoundException("User not found");
@@ -206,8 +206,8 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
 
             postDomain.setIsDeleted(false);
 
-            if (postDto.getId_user() != null) {
-                UserDomain userDomain = userDao.findById(postDto.getId_user()).orElse(null);
+            if (postDto.getIdUser() != null) {
+                UserDomain userDomain = userDao.findById(postDto.getIdUser()).orElse(null);
                 //verificar si existe
                 if (userDomain != null && !userDomain.getIsDeleted()) {
                     postDomain.setUser(userDomain);
