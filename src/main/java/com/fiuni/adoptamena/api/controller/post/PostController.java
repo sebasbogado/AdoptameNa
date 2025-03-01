@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/posts")
 @Tag(name = "Post")
@@ -49,20 +51,21 @@ public class PostController {
     @PostMapping({ "", "/" })
     public ResponseEntity<PostDTO> create(@RequestBody() PostDTO postDto) {
 
-        PostDTO data = this.postService.save(postDto);
+        PostDTO data = this.postService.create(postDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
     @PutMapping({ "/{id}" })
-    public ResponseEntity<PostDTO> update(@PathVariable(name = "id", required = true) int id,
+    public ResponseEntity<PostDTO> update(@PathVariable(name = "id", required = true) Integer id,
             @RequestBody() PostDTO postDto) {
-        PostDTO data = this.postService.updateById(id, postDto);
+        postDto.setId(id);
+        PostDTO data = this.postService.update(postDto);
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
     @DeleteMapping({ "/{id}" })
-    public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) int id) {
-        this.postService.deleteById(id);
+    public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) Integer id) {
+        this.postService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("post with id: " + id + "was deleted");
     }
 

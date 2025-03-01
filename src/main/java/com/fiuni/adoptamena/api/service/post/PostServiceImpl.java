@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,7 +36,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
     private IUserDao userDao;
 
     @Override
-    public PostDTO save(PostDTO postDto) {
+    public PostDTO create(PostDTO postDto) {
         PostDTO savedPostDTO = null;
         try {
             PostDomain postDomain = convertDtoToDomain(postDto);
@@ -51,20 +53,32 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
     }
 
     @Override
-    public PostDTO updateById(int id, PostDTO postDto) {
+    public PostDTO update(PostDTO postDto) {
+        PostDomain savedPostDomain = null;
         try {
-            postDto.setId(id);
+            PostDomain postDomain = postDao.findById(postDto.getId()).orElseThrow(() -> new ResourceNotFoundException("Post could not be found"));
+
+            PostDomain updatePostDomain = convertDtoToDomain(postDto);
+
+            if (!postDomain.getIsDeleted()){
+                updatePostDomain.setPublicationDate(postDomain.getPublicationDate());
+                updatePostDomain.setIsDeleted(false);
+                updatePostDomain.setUser(postDomain.getUser());
+                updatePostDomain.setStatus(postDomain.getStatus());
+            }
+
+            savedPostDomain = postDao.save(updatePostDomain);
             log.info("post update successful");
         } catch (Exception e) {
             log.info("post update failed");
             throw new ResourceNotFoundException("Post could not be updated");
             //new ErrorResponse("Error updating post", e.getMessage());
         }
-        return save(postDto);
+        return convertDomainToDto(savedPostDomain);
     }
 
     @Override
-    public void deleteById(int id) {
+    public void delete(Integer id) {
         log.info("Deleting post");
         try {
             PostDomain postDomain = postDao.findById(id).orElse(null);
@@ -82,7 +96,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
     }
 
     @Override
-    public PostDTO getById(int id) {
+    public PostDTO getById(Integer id) {
         log.info("Getting post by id");
         PostDTO postDto = null;
         try {
@@ -98,6 +112,11 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             //new ErrorResponse("Error getting post", e.getMessage());
         }
         return postDto;
+    }
+
+    @Override
+    public List<PostDTO> getAll(Pageable pageable) {
+        return null;
     }
 
     @Override
