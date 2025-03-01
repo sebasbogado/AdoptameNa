@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -85,15 +86,19 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     @Override
-    //TODO: tiene que recibir un dto; cambiar logica
     public ProfileDTO update(ProfileDTO profile) {
+        log.info("Actualizando perfil {}", profile);
         profileDao.findByIdAndIsDeletedFalse(profile.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
-        validateGender(profile.getGender().name());
         // validate user exists
         userDao.findByIdAndIsDeletedFalse(profile.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        //save
+        // save
+        if(profile.getGender() != null) {
+            validateGender(profile.getGender().name());
+        }
+        log.info("Gender validado");
+
         ProfileDomain profileDomainSaved = profileDao.save(convertDtoToDomain(profile));
         return convertDomainToDto(profileDomainSaved);
     }
@@ -116,9 +121,11 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         profileDao.save(domain);
         log.info("Perfil eliminado {}", domain);
     }
+
     @Override
     public Page<ProfileDTO> getAll(Pageable pageable) {
-        return profileDao.findAllByIsDeletedFalse(pageable).map(this::convertDomainToDto);
+        Page<ProfileDomain> page = profileDao.findAllByIsDeletedFalse(pageable);
+        return page.map(this::convertDomainToDto);
     }
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
@@ -135,9 +142,6 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     private void validateGender(String gender) {
-        if (gender == null) {
-            return;
-        }
         try {
             EnumGender.valueOf(gender.toUpperCase());
         } catch (IllegalArgumentException e) {
