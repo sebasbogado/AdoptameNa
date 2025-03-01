@@ -3,7 +3,6 @@ package com.fiuni.adoptamena.api.controller.post;
 import com.fiuni.adoptamena.api.dto.post.PostDTO;
 import com.fiuni.adoptamena.api.service.post.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,7 +29,7 @@ public class PostController {
     }
 
     @GetMapping({ "", "/" })
-    public ResponseEntity<Page<PostDTO>> getAllPosts(
+    public ResponseEntity<List<PostDTO>> getAllPosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
@@ -43,7 +42,7 @@ public class PostController {
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
 
-        Page<PostDTO> postsPage = postService.getAllPosts(pageable, title, content, userId, postTypeId);
+        List<PostDTO> postsPage = postService.getAllPosts(pageable, title, content, userId, postTypeId);
 
         return ResponseEntity.ok(postsPage);
     }
@@ -70,7 +69,7 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<PostDTO>> searchPostByKeyword(
+    public ResponseEntity<List<PostDTO>> searchPostByKeyword(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
@@ -78,7 +77,7 @@ public class PostController {
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
 
-        Page<PostDTO> postsPage = postService.searchPostByKeyword(pageable, keyword);
+        List<PostDTO> postsPage = postService.searchPostByKeyword(pageable, keyword);
 
         return ResponseEntity.status(HttpStatus.OK).body(postsPage);
     }

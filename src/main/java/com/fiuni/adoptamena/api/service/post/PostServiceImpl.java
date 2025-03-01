@@ -120,25 +120,25 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
     }
 
     @Override
-    public Page<PostDTO> getAllPosts(Pageable pageable, String title, String content, Integer userId, Integer postTypeId) {
+    public List<PostDTO> getAllPosts(Pageable pageable, String title, String content, Integer userId, Integer postTypeId) {
         log.info("Getting all posts");
 
         if (title != null || content != null || userId != null || postTypeId != null) {
             Page<PostDomain> postPage = postDao.findByFiltersAAndIsDeletedFalse(pageable, title, content, userId, postTypeId);
-            return postPage.map(this::convertDomainToDto);
+            return convertDomainListToDtoList(postPage.getContent());
         }
 
         Page<PostDomain> postPage = postDao.findAllByIsDeletedFalse(pageable);
-        return postPage.map(this::convertDomainToDto);
+        return convertDomainListToDtoList(postPage.getContent());
     }
 
     @Override
-    public Page<PostDTO> searchPostByKeyword(Pageable pageable, String keyword) {
+    public List<PostDTO> searchPostByKeyword(Pageable pageable, String keyword) {
         log.info("Searching posts by keyword: {}", keyword);
 
         Page<PostDomain> postPage = postDao.findByTitleContainingOrContentContainingAndIsDeletedFalse(keyword, keyword, pageable);
 
-        return postPage.map(this::convertDomainToDto);
+        return convertDomainListToDtoList(postPage.getContent());
     }
 
     @Override
