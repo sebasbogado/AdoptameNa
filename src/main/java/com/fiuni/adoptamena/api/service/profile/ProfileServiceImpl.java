@@ -7,7 +7,7 @@ import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.exceptions.*;
-
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,7 +38,6 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         domain.setDocument(dto.getDocument());
         domain.setPhoneNumber(dto.getPhoneNumber());
         domain.setEarnedPoints(dto.getEarnedPoints());
-        domain.setIsDeleted(dto.getIsDeleted());
         return domain;
     }
 
@@ -56,7 +55,6 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         dto.setDocument(domain.getDocument());
         dto.setPhoneNumber(domain.getPhoneNumber());
         dto.setEarnedPoints(domain.getEarnedPoints());
-        dto.setIsDeleted(domain.getIsDeleted());
         return dto;
     }
 
@@ -68,6 +66,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     @Override
+    @Transactional
     public ProfileDTO create(ProfileDTO profile) {
         log.info("Creando perfil {}");
         ProfileDomain domain = new ProfileDomain();
@@ -86,9 +85,10 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     @Override
+    @Transactional
     public ProfileDTO update(ProfileDTO profile) {
         log.info("Actualizando perfil {}", profile);
-        profileDao.findByIdAndIsDeletedFalse(profile.getId())
+        ProfileDomain profileOrigin = profileDao.findByIdAndIsDeletedFalse(profile.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
         // validate user exists
         userDao.findByIdAndIsDeletedFalse(profile.getId())
@@ -98,13 +98,14 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
             validateGender(profile.getGender().name());
         }
         log.info("Gender validado");
-
+        profile.setEarnedPoints(profileOrigin.getEarnedPoints());
         ProfileDomain profileDomainSaved = profileDao.save(convertDtoToDomain(profile));
         return convertDomainToDto(profileDomainSaved);
     }
 
     // delete when user is deleted in user service
     @Override
+    @Transactional
     public void delete(Integer id) {
         ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
