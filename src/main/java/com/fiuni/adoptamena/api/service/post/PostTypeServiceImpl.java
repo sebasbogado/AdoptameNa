@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,7 +25,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
     private IPostTypeDao postTypeDao;
 
     @Override
-    public PostTypeDTO save(PostTypeDTO postTypeDto) {
+    public PostTypeDTO create(PostTypeDTO postTypeDto) {
 
         PostTypeDTO savedPostTypeDTO = null;
         try {
@@ -42,20 +43,30 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
     }
 
     @Override
-    public PostTypeDTO updateById(int id, PostTypeDTO postTypeDto) {
+    public PostTypeDTO update(PostTypeDTO postTypeDto) {
+
+        PostTypeDomain savedPostTypeDomain = null;
+
         try {
-            postTypeDto.setId(id);
+            PostTypeDomain postTypeDomain = postTypeDao.findById(postTypeDto.getId()).orElseThrow(() -> new ResourceNotFoundException("PostType not found"));
+
+            PostTypeDomain updatedPostTypeDomain = convertDtoToDomain(postTypeDto);
+
+            if(!postTypeDomain.getIsDeleted()){
+                updatedPostTypeDomain.setIsDeleted(false);
+            }
+            savedPostTypeDomain = postTypeDao.save(updatedPostTypeDomain);
             log.info("PostType update successful");
         } catch (Exception e) {
             log.info("PostType update failed");
             throw new ResourceNotFoundException("Error while updating postType");
             // new ErrorResponse("Error updating a post Type", e.getMessage());
         }
-        return save(postTypeDto);
+        return convertDomainToDto(savedPostTypeDomain);
     }
 
     @Override
-    public void deleteById(int id) {
+    public void delete(Integer id) {
         log.info("Deleting PostType");
         try {
             PostTypeDomain postTypeDomain = postTypeDao.findById(id).orElse(null);
@@ -74,7 +85,7 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
     }
 
     @Override
-    public PostTypeDTO getById(int id) {
+    public PostTypeDTO getById(Integer id) {
         log.info("Get PostType by id");
         PostTypeDTO postTypeDto = null;
         try {
@@ -94,18 +105,23 @@ public class PostTypeServiceImpl extends BaseServiceImpl<PostTypeDomain, PostTyp
     }
 
     @Override
-    public Page<PostTypeDTO> getAllPostTypes(Pageable pageable, String name, String description) {
+    public List<PostTypeDTO> getAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public List<PostTypeDTO> getAllPostTypes(Pageable pageable, String name, String description) {
         log.info("Get All PostType");
         if (name == null && description == null) {
 
             Page<PostTypeDomain> postTypesPage = postTypeDao.findAllByIsDeletedFalse(pageable);
-            return postTypesPage.map(this::convertDomainToDto);
+            return convertDomainListToDtoList(postTypesPage.getContent());
         }
 
         Page<PostTypeDomain> postTypesPage = postTypeDao
                 .findByNameContainingAndDescriptionContainingAndIsDeletedFalse(name, description, pageable);
 
-        return postTypesPage.map(this::convertDomainToDto);
+        return convertDomainListToDtoList(postTypesPage.getContent());
     }
 
     @Override
