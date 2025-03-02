@@ -19,7 +19,7 @@ public class PostDTO implements Serializable {
 
     private Integer id;
 
-    private Integer id_user;
+    private Integer idUser;
 
     private String title;
 

@@ -6,6 +6,8 @@ import com.fiuni.adoptamena.api.service.base.IBaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface IReportReasonsService extends IBaseService<ReportReasonsDomain, ReportReasonsDTO> {
-    Page<ReportReasonsDTO> getAllReportReasons(Pageable pageable, String description);
+    List<ReportReasonsDTO> getAllReportReasons(Pageable pageable, String description);
 }
