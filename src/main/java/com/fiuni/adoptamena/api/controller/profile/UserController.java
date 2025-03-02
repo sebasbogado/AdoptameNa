@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 @RestController
@@ -24,25 +23,26 @@ public class UserController {
 
     @Autowired
     private IProfileService profileService;
-    //TODO: CAMBIAR NOMBRE DE METODO
+    
     @GetMapping("/{id}/profile")
-    public ResponseEntity<ProfileDTO> getMethodName(@PathVariable Integer id) {
+    public ResponseEntity<ProfileDTO> getById(@PathVariable Integer id) {
         ProfileDTO result = profileService.getById(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/profile")
-    public ResponseEntity<ProfileDTO> updateMethodName(@Valid @PathVariable Integer id, @RequestBody ProfileDTO profile,
+    public ResponseEntity<ProfileDTO> update(@Valid @PathVariable Integer id, @RequestBody ProfileDTO profile,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
+        profile.setId(id);
         ProfileDTO result = profileService.update(profile);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMethodName(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
         profileService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
