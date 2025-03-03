@@ -14,7 +14,11 @@ import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.api.service.profile.IProfileService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+@Service
+@Slf4j
 public class UserServiceImpl extends BaseServiceImpl<UserDomain, UserDTO> implements IUserService {
 
     @Autowired

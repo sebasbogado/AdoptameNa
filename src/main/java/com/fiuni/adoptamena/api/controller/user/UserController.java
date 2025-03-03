@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.controller.profile;
+package com.fiuni.adoptamena.api.controller.user;
 
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
 import com.fiuni.adoptamena.api.dto.user.UserDTO;
