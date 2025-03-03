@@ -26,11 +26,7 @@ public class PostController {
     private IPostService postService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") int id, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") int id) {
 
         PostDTO data = this.postService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(data);
@@ -44,13 +40,9 @@ public class PostController {
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "user", required = false) Integer userId, // Filtro por usuario
-            @RequestParam(value = "postType", required = false) Integer postTypeId, // Filtro por tipo de post
-            BindingResult bindingResult
-    ) {
+            @RequestParam(value = "postType", required = false) Integer postTypeId // Filtro por tipo de post
 
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+    ) {
 
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
@@ -100,12 +92,8 @@ public class PostController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
-            @RequestParam(value = "keyword") String keyword,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+            @RequestParam(value = "keyword") String keyword
+            ) {
 
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
