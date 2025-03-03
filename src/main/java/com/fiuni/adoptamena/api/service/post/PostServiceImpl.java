@@ -206,7 +206,6 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             postDomain.setLocationCoordinates(postDto.getLocationCoordinates());
             postDomain.setSharedCounter(postDto.getSharedCounter());
             postDomain.setStatus(postDto.getStatus());
-
             postDomain.setIsDeleted(false);
 
             if (postDto.getIdUser() != null) {
