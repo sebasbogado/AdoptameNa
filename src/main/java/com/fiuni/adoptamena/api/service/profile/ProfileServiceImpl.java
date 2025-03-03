@@ -80,6 +80,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
 
         ProfileDomain domain = convertDtoToDomain(profile);
         domain.setUser(user);
+        domain.setId(null);
         setDefaultAttributes(domain);
         // TEST
         log.info("ProfileDomain a ser guardado: {}", domain);
