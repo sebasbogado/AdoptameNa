@@ -3,8 +3,8 @@ package com.fiuni.adoptamena.api.controller.post;
 import com.fiuni.adoptamena.api.dto.post.PostTypeDTO;
 import com.fiuni.adoptamena.api.service.post.IPostTypeService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,11 +25,8 @@ public class PostTypeController {
     private IPostTypeService postTypeService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostTypeDTO> getPostTypeById(@PathVariable(name = "id") int id, BindingResult bindingResult) {
+    public ResponseEntity<PostTypeDTO> getPostTypeById(@PathVariable(name = "id") int id) {
 
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
 
         PostTypeDTO data = this.postTypeService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(data);
@@ -41,12 +38,8 @@ public class PostTypeController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "description", required = false) String description,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+            @RequestParam(value = "description", required = false) String description
+            ) {
 
         // Desglosar el parámetro 'sort' en campo y dirección
         String[] sortParams = sort.split(",");
@@ -60,7 +53,8 @@ public class PostTypeController {
     }
 
     @PostMapping({ "", "/" })
-    public ResponseEntity<PostTypeDTO> create(@RequestBody() PostTypeDTO postTypeDto, BindingResult bindingResult) {
+    public ResponseEntity<PostTypeDTO> create(@Valid @RequestBody() PostTypeDTO postTypeDto,
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -71,7 +65,7 @@ public class PostTypeController {
     }
 
     @PutMapping({ "/{id}" })
-    public ResponseEntity<PostTypeDTO> update(@PathVariable(name = "id", required = true) int id,
+    public ResponseEntity<PostTypeDTO> update(@Valid @PathVariable(name = "id", required = true) int id,
             @RequestBody() PostTypeDTO postTypeDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -84,7 +78,8 @@ public class PostTypeController {
     }
 
     @DeleteMapping({ "/{id}" })
-    public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) Integer id, BindingResult bindingResult) {
+    public ResponseEntity<String> delete(@Valid @PathVariable(name = "id", required = true) Integer id,
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());

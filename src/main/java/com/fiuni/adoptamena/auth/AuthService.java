@@ -120,7 +120,7 @@ public class AuthService {
                 profile.setOrganizationName(request.getOrganizationName());
 
             }
-            profileService.save(profile);
+            profileService.create(profile);
 
             // Enviar email de verificación si es necesario
             if (sendEmail) {
