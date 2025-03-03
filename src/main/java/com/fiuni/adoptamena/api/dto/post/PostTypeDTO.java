@@ -1,5 +1,6 @@
 package com.fiuni.adoptamena.api.dto.post;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class PostTypeDTO implements Serializable {
 
     private Integer id;
 
+    @NotBlank(message = "El nombre es obligatorio ")
     private String name;
 
     private String description;

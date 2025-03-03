@@ -3,6 +3,7 @@ package com.fiuni.adoptamena.api.controller.post;
 import com.fiuni.adoptamena.api.dto.post.PostTypeDTO;
 import com.fiuni.adoptamena.api.service.post.IPostTypeService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,7 +61,7 @@ public class PostTypeController {
     }
 
     @PostMapping({ "", "/" })
-    public ResponseEntity<PostTypeDTO> create(@RequestBody() PostTypeDTO postTypeDto, BindingResult bindingResult) {
+    public ResponseEntity<PostTypeDTO> create(@Valid  @RequestBody() PostTypeDTO postTypeDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -71,7 +72,7 @@ public class PostTypeController {
     }
 
     @PutMapping({ "/{id}" })
-    public ResponseEntity<PostTypeDTO> update(@PathVariable(name = "id", required = true) int id,
+    public ResponseEntity<PostTypeDTO> update(@Valid @PathVariable(name = "id", required = true) int id,
             @RequestBody() PostTypeDTO postTypeDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -84,7 +85,7 @@ public class PostTypeController {
     }
 
     @DeleteMapping({ "/{id}" })
-    public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) Integer id, BindingResult bindingResult) {
+    public ResponseEntity<String> delete(@Valid @PathVariable(name = "id", required = true) Integer id, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
