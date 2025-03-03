@@ -13,7 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
+import org.springframework.data.domain.Pageable;
+import java.util.List;
 @RestController
 @RequestMapping("/users")
 @Slf4j
@@ -22,26 +23,33 @@ public class UserController {
 
     @Autowired
     private IProfileService profileService;
-
+    
     @GetMapping("/{id}/profile")
-    public ResponseEntity<ProfileDTO> getMethodName(@PathVariable Integer id) {
+    public ResponseEntity<ProfileDTO> getById(@PathVariable Integer id) {
         ProfileDTO result = profileService.getById(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/profile")
-    public ResponseEntity<ProfileDTO> updateMethodName(@Valid @PathVariable Integer id, @RequestBody ProfileDTO profile,
+    public ResponseEntity<ProfileDTO> update(@Valid @PathVariable Integer id, @RequestBody ProfileDTO profile,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        ProfileDTO result = profileService.updateById(id, profile);
+        profile.setId(id);
+        ProfileDTO result = profileService.update(profile);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMethodName(@PathVariable Integer id) {
-        profileService.deleteById(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+        profileService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/profiles")
+    public ResponseEntity<List<ProfileDTO>> getAllProfiles(Pageable pageable) {
+        return new ResponseEntity<>(profileService.getAll(pageable), HttpStatus.OK);
+    }
+
 }

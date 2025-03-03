@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,7 +35,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
     private IUserDao userDao;
 
     @Override
-    public PostDTO save(PostDTO postDto) {
+    public PostDTO create(PostDTO postDto) {
         PostDTO savedPostDTO = null;
         try {
             PostDomain postDomain = convertDtoToDomain(postDto);
@@ -45,44 +46,57 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
         } catch (Exception e) {
             log.info("post save failed");
             throw new ResourceNotFoundException("Post could not be saved");
-            //new ErrorResponse("Error creating post", e.getMessage());
+            // new ErrorResponse("Error creating post", e.getMessage());
         }
         return savedPostDTO;
     }
 
     @Override
-    public PostDTO updateById(int id, PostDTO postDto) {
+    public PostDTO update(PostDTO postDto) {
+        PostDomain savedPostDomain = null;
         try {
-            postDto.setId(id);
+            PostDomain postDomain = postDao.findById(postDto.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Post could not be found"));
+
+            PostDomain updatePostDomain = convertDtoToDomain(postDto);
+
+            if (!postDomain.getIsDeleted()) {
+                updatePostDomain.setPublicationDate(postDomain.getPublicationDate());
+                updatePostDomain.setIsDeleted(false);
+                updatePostDomain.setUser(postDomain.getUser());
+                updatePostDomain.setStatus(postDomain.getStatus());
+            }
+
+            savedPostDomain = postDao.save(updatePostDomain);
             log.info("post update successful");
         } catch (Exception e) {
             log.info("post update failed");
             throw new ResourceNotFoundException("Post could not be updated");
-            //new ErrorResponse("Error updating post", e.getMessage());
+            // new ErrorResponse("Error updating post", e.getMessage());
         }
-        return save(postDto);
+        return convertDomainToDto(savedPostDomain);
     }
 
     @Override
-    public void deleteById(int id) {
+    public void delete(Integer id) {
         log.info("Deleting post");
         try {
             PostDomain postDomain = postDao.findById(id).orElse(null);
             if (postDomain != null && !postDomain.getIsDeleted()) {
-                //postDao.delete(postDomain);  // descomentar para borrar en la base de datos
+                // postDao.delete(postDomain); // descomentar para borrar en la base de datos
                 postDomain.setIsDeleted(true); // comentar para borrar en la base de datos
-                postDao.save(postDomain);      // comentar para borrar en la base de datos
+                postDao.save(postDomain); // comentar para borrar en la base de datos
                 log.info("post delete successful");
             }
         } catch (Exception e) {
             log.info("post delete failed");
             throw new ResourceNotFoundException("Post could not be deleted");
-            //new ErrorResponse("Error deleting post", e.getMessage());
+            // new ErrorResponse("Error deleting post", e.getMessage());
         }
     }
 
     @Override
-    public PostDTO getById(int id) {
+    public PostDTO getById(Integer id) {
         log.info("Getting post by id");
         PostDTO postDto = null;
         try {
@@ -95,43 +109,51 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
         } catch (Exception e) {
             log.info("post get failed");
             throw new ResourceNotFoundException("Post could not be found");
-            //new ErrorResponse("Error getting post", e.getMessage());
+            // new ErrorResponse("Error getting post", e.getMessage());
         }
         return postDto;
     }
 
     @Override
-    public Page<PostDTO> getAllPosts(Pageable pageable, String title, String content, Integer userId, Integer postTypeId) {
-        log.info("Getting all posts");
-
-        if (title != null || content != null || userId != null || postTypeId != null) {
-            Page<PostDomain> postPage = postDao.findByFiltersAAndIsDeletedFalse(pageable, title, content, userId, postTypeId);
-            return postPage.map(this::convertDomainToDto);
-        }
-
-        Page<PostDomain> postPage = postDao.findAllByIsDeletedFalse(pageable);
-        return postPage.map(this::convertDomainToDto);
+    public List<PostDTO> getAll(Pageable pageable) {
+        return null;
     }
 
     @Override
-    public Page<PostDTO> searchPostByKeyword(Pageable pageable, String keyword) {
+    public List<PostDTO> getAllPosts(Pageable pageable, String title, String content, Integer userId,
+            Integer postTypeId) {
+        log.info("Getting all posts");
+
+        if (title != null || content != null || userId != null || postTypeId != null) {
+            Page<PostDomain> postPage = postDao.findByFiltersAAndIsDeletedFalse(pageable, title, content, userId,
+                    postTypeId);
+            return convertDomainListToDtoList(postPage.getContent());
+        }
+
+        Page<PostDomain> postPage = postDao.findAllByIsDeletedFalse(pageable);
+        return convertDomainListToDtoList(postPage.getContent());
+    }
+
+    @Override
+    public List<PostDTO> searchPostByKeyword(Pageable pageable, String keyword) {
         log.info("Searching posts by keyword: {}", keyword);
 
-        Page<PostDomain> postPage = postDao.findByTitleContainingOrContentContainingAndIsDeletedFalse(keyword, keyword, pageable);
+        Page<PostDomain> postPage = postDao.findByTitleContainingOrContentContainingAndIsDeletedFalse(keyword, keyword,
+                pageable);
 
-        return postPage.map(this::convertDomainToDto);
+        return convertDomainListToDtoList(postPage.getContent());
     }
 
     @Override
     public void increaseSharedCounter(Integer postId) {
 
-        PostDomain postDomain = postDao.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        PostDomain postDomain = postDao.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         postDomain.setSharedCounter(postDomain.getSharedCounter() + 1);
 
         postDao.save(postDomain);
     }
-
 
     @Override
     protected PostDTO convertDomainToDto(PostDomain postDomain) {
@@ -150,7 +172,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
             postDto.setStatus(postDomain.getStatus());
 
             if (postDomain.getUser() != null && postDomain.getUser().getId() != null) {
-                postDto.setId_user(postDomain.getUser().getId());
+                postDto.setIdUser(postDomain.getUser().getId());
             } else {
                 log.info("User not found");
                 throw new ResourceNotFoundException("User not found");
@@ -165,7 +187,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
         } catch (Exception e) {
             log.info("Error converting PostDomain to PostDTO", e);
             throw new ResourceNotFoundException("Error converting PostDomain to PostDTO");
-            //new ErrorResponse("Error converting PostDomain to PostDTO", e.getMessage());
+            // new ErrorResponse("Error converting PostDomain to PostDTO", e.getMessage());
         }
         return postDto;
     }
@@ -187,9 +209,9 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
 
             postDomain.setIsDeleted(false);
 
-            if (postDto.getId_user() != null) {
-                UserDomain userDomain = userDao.findById(postDto.getId_user()).orElse(null);
-                //verificar si existe
+            if (postDto.getIdUser() != null) {
+                UserDomain userDomain = userDao.findById(postDto.getIdUser()).orElse(null);
+                // verificar si existe
                 if (userDomain != null && !userDomain.getIsDeleted()) {
                     postDomain.setUser(userDomain);
                 } else {
@@ -219,7 +241,7 @@ public class PostServiceImpl extends BaseServiceImpl<PostDomain, PostDTO> implem
         } catch (Exception e) {
             log.error("Error converting PostDTO to PostDomain", e);
             throw new ResourceNotFoundException("Error converting PostDTO to PostDomain");
-            //new ErrorResponse("Error converting PostDTO to PostDomain", e.getMessage());
+            // new ErrorResponse("Error converting PostDTO to PostDomain", e.getMessage());
         }
         return postDomain;
     }
