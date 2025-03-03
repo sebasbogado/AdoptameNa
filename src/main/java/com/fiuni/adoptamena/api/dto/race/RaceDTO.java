@@ -2,7 +2,6 @@ package com.fiuni.adoptamena.api.dto.race;
 
 import java.io.Serial;
 
-import com.fiuni.adoptamena.api.dto.animal.AnimalDTO;
 import com.fiuni.adoptamena.api.dto.base.BaseDTO;
 
 import jakarta.validation.constraints.Size;
