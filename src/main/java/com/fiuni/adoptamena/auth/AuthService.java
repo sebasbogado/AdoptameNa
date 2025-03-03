@@ -104,11 +104,11 @@ public class AuthService {
             user.setCreationDate(new Date());
 
             // Guardar usuario en la base de datos
-            userDao.save(user);
+            UserDomain createdUser = userDao.save(user);
 
             // Crear perfil vacío asociado al usuario
             ProfileDTO profile = new ProfileDTO();
-            profile.setId(user.getId());
+            profile.setId(createdUser.getId());
             profile.setFullName(request.getFullName());
 
             // Guardar nombre de la organización si es necesario

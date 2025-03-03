@@ -10,7 +10,6 @@ import com.fiuni.adoptamena.exception_handler.exceptions.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
