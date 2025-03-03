@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @Slf4j
@@ -23,7 +24,19 @@ public class UserController {
 
     @Autowired
     private IProfileService profileService;
-    
+
+    @Autowired
+    private IUserService userService;
+
+    // Funciones de Usuario
+
+    // Obtener todos los usuarios
+    @GetMapping
+    public ResponseEntity<List<ProfileDTO>> getAll(Pageable pageable) {
+        return new ResponseEntity<>(profileService.getAll(pageable), HttpStatus.OK);
+    }
+
+    // Obtener
     @GetMapping("/{id}/profile")
     public ResponseEntity<ProfileDTO> getById(@PathVariable Integer id) {
         ProfileDTO result = profileService.getById(id);
