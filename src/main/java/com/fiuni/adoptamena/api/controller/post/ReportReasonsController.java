@@ -3,6 +3,7 @@ package com.fiuni.adoptamena.api.controller.post;
 import com.fiuni.adoptamena.api.dto.post.ReportReasonsDTO;
 import com.fiuni.adoptamena.api.service.post.IReportReasonsService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,7 @@ public class ReportReasonsController {
     private IReportReasonsService reportReasonsService;
 
     @PostMapping({"", "/"})
-    public ResponseEntity<ReportReasonsDTO> create(@RequestBody() ReportReasonsDTO reportReasonsDto, BindingResult bindingResult) {
+    public ResponseEntity<ReportReasonsDTO> create(@Valid  @RequestBody() ReportReasonsDTO reportReasonsDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -34,7 +35,7 @@ public class ReportReasonsController {
     }
 
     @PutMapping({"/{id}"})
-    public ResponseEntity<ReportReasonsDTO> update(@PathVariable(name = "id", required = true) int id, @RequestBody() ReportReasonsDTO reportReasonsDto, BindingResult bindingResult)  {
+    public ResponseEntity<ReportReasonsDTO> update(@Valid @PathVariable(name = "id", required = true) int id, @RequestBody() ReportReasonsDTO reportReasonsDto, BindingResult bindingResult)  {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -46,7 +47,7 @@ public class ReportReasonsController {
     }
 
     @DeleteMapping({"/{id}"})
-    public ResponseEntity<String> delete(@PathVariable(name = "id", required = true) Integer id, BindingResult bindingResult) {
+    public ResponseEntity<String> delete(@Valid @PathVariable(name = "id", required = true) Integer id, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
