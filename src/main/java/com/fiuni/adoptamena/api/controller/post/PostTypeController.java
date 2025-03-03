@@ -26,11 +26,8 @@ public class PostTypeController {
     private IPostTypeService postTypeService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostTypeDTO> getPostTypeById(@PathVariable(name = "id") int id, BindingResult bindingResult) {
+    public ResponseEntity<PostTypeDTO> getPostTypeById(@PathVariable(name = "id") int id) {
 
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
 
         PostTypeDTO data = this.postTypeService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(data);
@@ -42,12 +39,8 @@ public class PostTypeController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "description", required = false) String description,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+            @RequestParam(value = "description", required = false) String description
+            ) {
 
         // Desglosar el parámetro 'sort' en campo y dirección
         String[] sortParams = sort.split(",");

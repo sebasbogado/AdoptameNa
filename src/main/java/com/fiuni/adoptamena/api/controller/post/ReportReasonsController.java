@@ -58,11 +58,7 @@ public class ReportReasonsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReportReasonsDTO> getReportReasonById(@PathVariable(name = "id", required = true) int id, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
+    public ResponseEntity<ReportReasonsDTO> getReportReasonById(@PathVariable(name = "id", required = true) int id) {
 
         ReportReasonsDTO data = this.reportReasonsService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(data);
@@ -73,12 +69,9 @@ public class ReportReasonsController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "id,asc") String sort,
-            @RequestParam(value = "description", required = false) String description,
-            BindingResult bindingResult) {
+            @RequestParam(value = "description", required = false) String description
+            ) {
 
-        if (bindingResult.hasErrors()) {
-            throw new BadRequestException(bindingResult.getAllErrors());
-        }
 
         String[] sortParams = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortParams[0])));
