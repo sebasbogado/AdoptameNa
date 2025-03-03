@@ -19,13 +19,13 @@ public class ProfileDomain implements BaseDomain {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id // Asegura que el campo "id" es tratado como la PK de esta entidad
+    @Id
     @Column(name = "id_profile", nullable = false, unique = true)
-    @MapsId // Utilizamos MapsId para que Profile comparta el mismo ID de User
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "id_profile", referencedColumnName = "id_user")
+    @MapsId // Indica que el id de Profile será el mismo que el de User
+    @JoinColumn(name = "id_profile") // Define la columna que será la clave foránea
     private UserDomain user;
 
     @Column(name = "str_organization_name", length = 100)
