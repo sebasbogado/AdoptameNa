@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,7 +64,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public ReportReasonsDTO save(ReportReasonsDTO reportReasonsDto) {
+    public ReportReasonsDTO create(ReportReasonsDTO reportReasonsDto) {
 
         ReportReasonsDTO savedReportReasonDto = null;
         try {
@@ -81,20 +82,30 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public ReportReasonsDTO updateById(int id, ReportReasonsDTO reportReasonsDto) {
+    public ReportReasonsDTO update(ReportReasonsDTO reportReasonsDto) {
+        ReportReasonsDomain savedReportReasonsDomain = null;
         try {
-            reportReasonsDto.setId(id);
+            ReportReasonsDomain reportReasonsDomain = reportReasonsDao.findById(reportReasonsDto.getId()).orElseThrow(() -> new ResourceNotFoundException("Report Reasons not found"));
+
+            ReportReasonsDomain updatedReportReasonsDomain = convertDtoToDomain(reportReasonsDto);
+
+            if(reportReasonsDomain.getIsDeleted()){
+                updatedReportReasonsDomain.setIsDeleted(false);
+            }
+
+            savedReportReasonsDomain = reportReasonsDao.save(updatedReportReasonsDomain);
+
             log.info("Updating report reason successful");
         } catch (Exception e) {
             log.info("Error updating ReportReasonsDTO");
             throw new ResourceNotFoundException("Error updating report reason");
             // new ErrorResponse("Error updating report reason.", e.getMessage());
         }
-        return save(reportReasonsDto);
+        return convertDomainToDto(savedReportReasonsDomain);
     }
 
     @Override
-    public void deleteById(int id) {
+    public void delete(Integer id) {
         log.info("Deleting report reason");
         try {
             ReportReasonsDomain reportReasonsDomain = reportReasonsDao.findById(id).orElse(null);
@@ -113,7 +124,7 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public ReportReasonsDTO getById(int id) {
+    public ReportReasonsDTO getById(Integer id) {
         log.info("Getting report reason");
         ReportReasonsDTO reportReasonsDto = null;
         try {
@@ -133,15 +144,20 @@ public class ReportReasonsServiceImpl extends BaseServiceImpl<ReportReasonsDomai
     }
 
     @Override
-    public Page<ReportReasonsDTO> getAllReportReasons(Pageable pageable, String description) {
+    public List<ReportReasonsDTO> getAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public List<ReportReasonsDTO> getAllReportReasons(Pageable pageable, String description) {
         log.info("Getting all report reasons");
         if (description == null) {
             Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao.findAllByIsDeletedFalse(pageable);
-            return reportReasonsPage.map(this::convertDomainToDto);
+            return convertDomainListToDtoList(reportReasonsPage.getContent());
         }
 
         Page<ReportReasonsDomain> reportReasonsPage = reportReasonsDao
                 .findByDescriptionContainingAndIsDeletedFalse(description, pageable);
-        return reportReasonsPage.map(this::convertDomainToDto);
+        return convertDomainListToDtoList(reportReasonsPage.getContent());
     }
 }
