@@ -10,6 +10,7 @@ import com.fiuni.adoptamena.exception_handler.exceptions.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
@@ -81,7 +82,12 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         ProfileDomain domain = convertDtoToDomain(profile);
         domain.setUser(user);
         setDefaultAttributes(domain);
-        return convertDomainToDto(profileDao.save(domain));
+        // TEST
+        log.info("ProfileDomain a ser guardado: {}", domain);
+        ProfileDomain saved = profileDao.save(domain);
+        log.info("Perfil creado para el usuario con ID {}", profile.getId());
+        return convertDomainToDto(saved);
+        // return convertDomainToDto(profileDao.save(domain));
     }
 
     @Override
