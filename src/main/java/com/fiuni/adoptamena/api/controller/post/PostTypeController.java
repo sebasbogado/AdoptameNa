@@ -5,7 +5,6 @@ import com.fiuni.adoptamena.api.service.post.IPostTypeService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,7 +53,8 @@ public class PostTypeController {
     }
 
     @PostMapping({ "", "/" })
-    public ResponseEntity<PostTypeDTO> create(@Valid  @RequestBody() PostTypeDTO postTypeDto, BindingResult bindingResult) {
+    public ResponseEntity<PostTypeDTO> create(@Valid @RequestBody() PostTypeDTO postTypeDto,
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
@@ -78,7 +78,8 @@ public class PostTypeController {
     }
 
     @DeleteMapping({ "/{id}" })
-    public ResponseEntity<String> delete(@Valid @PathVariable(name = "id", required = true) Integer id, BindingResult bindingResult) {
+    public ResponseEntity<String> delete(@Valid @PathVariable(name = "id", required = true) Integer id,
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
