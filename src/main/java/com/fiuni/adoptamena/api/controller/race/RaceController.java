@@ -32,11 +32,11 @@ public class RaceController {
     }
 
     @PostMapping
-    public ResponseEntity<RaceDTO> update(@Valid @RequestBody RaceDTO race, BindingResult bindingResult) {
+    public ResponseEntity<RaceDTO> create(@Valid @RequestBody RaceDTO race, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        RaceDTO result = raceService.update(race);
+        RaceDTO result = raceService.create(race);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
