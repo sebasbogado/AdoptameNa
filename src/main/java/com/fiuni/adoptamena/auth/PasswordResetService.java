@@ -24,12 +24,13 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final AuthService authService;
 
+    // Inyectamos la URL base desde el archivo de configuración
     @Value("${app.url}")
-    private String API_URL;
+    private String baseUrl;
 
-    private static final String BASE_RESET_PASSWORD_LINK = "localhost:8080/auth/reset-password?token=";
     /**
-     * Crea un nuevo token de restablecimiento de contraseña para un usuario y lo guarda en la base de datos.
+     * Crea un nuevo token de restablecimiento de contraseña para un usuario y lo
+     * guarda en la base de datos.
      * 
      * @param user Usuario para el cual se genera el token
      * @return Token de restablecimiento de contraseña generado
@@ -50,7 +51,8 @@ public class PasswordResetService {
      */
     public PasswordResetTokenDomain getResetToken(String token) {
         return passwordResetTokenDao.findByToken(token)
-                .orElseThrow(() -> new BadRequestException("Token de restablecimiento de contraseña inválido o expirado."));
+                .orElseThrow(
+                        () -> new BadRequestException("Token de restablecimiento de contraseña inválido o expirado."));
     }
 
     /**
@@ -89,7 +91,7 @@ public class PasswordResetService {
     /**
      * Permite al usuario establecer una nueva contraseña.
      * 
-     * @param token Token de restablecimiento de contraseña
+     * @param token       Token de restablecimiento de contraseña
      * @param newPassword Nueva contraseña del usuario
      * @return Respuesta con mensaje de éxito
      */
@@ -125,7 +127,7 @@ public class PasswordResetService {
         deleteToken(user);
 
         String token = createResetToken(user);
-        emailService.sendResetPasswordEmail(user.getEmail(), BASE_RESET_PASSWORD_LINK + token);
+        emailService.sendResetPasswordEmail(user.getEmail(), baseUrl + "/reset-password?token=" + token);
 
         return GenericResponse.builder()
                 .message("Correo de restablecimiento de contraseña enviado correctamente.")
