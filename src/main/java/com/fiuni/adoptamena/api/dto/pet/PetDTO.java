@@ -6,10 +6,13 @@ import com.fiuni.adoptamena.api.dto.base.BaseDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
 import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class PetDTO extends BaseDTO{
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Size(min = 1, max = 100, message = "El nombre debe tener entre 1 y 100 caracteres")
@@ -34,7 +37,7 @@ public class PetDTO extends BaseDTO{
 
     private Integer animalId;
 
-    private Integer raceId;
+    private Integer breedId;
 
     private Integer healthStateId;
 
