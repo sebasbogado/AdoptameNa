@@ -22,6 +22,7 @@ public class PasswordResetService {
     private final IPasswordResetTokenDao passwordResetTokenDao;
     private final IUserDao userDao;
     private final EmailService emailService;
+    private final AuthService authService;
 
     @Value("${app.url}")
     private String API_URL;
@@ -103,7 +104,7 @@ public class PasswordResetService {
         }
 
         UserDomain user = resetToken.getUser();
-        user.setPassword(newPassword); // Asegúrate de cifrar la nueva contraseña
+        authService.setPassword(user.getEmail(), newPassword);
 
         deleteToken(user);
 
