@@ -10,24 +10,22 @@ import com.fiuni.adoptamena.exception_handler.exceptions.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Service
 @Slf4j
 public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDTO> implements IProfileService {
+
     @Autowired
     private IProfileDao profileDao;
     @Autowired
     private IUserDao userDao;
 
-    // dto to domain
     @Override
     protected ProfileDomain convertDtoToDomain(ProfileDTO dto) {
-        final ProfileDomain domain = new ProfileDomain();
+        ProfileDomain domain = new ProfileDomain();
         domain.setId(dto.getId());
         domain.setOrganizationName(dto.getOrganizationName());
         domain.setFullName(dto.getFullName());
@@ -41,10 +39,9 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         return domain;
     }
 
-    // domain to dto
     @Override
     protected ProfileDTO convertDomainToDto(ProfileDomain domain) {
-        final ProfileDTO dto = new ProfileDTO();
+        ProfileDTO dto = new ProfileDTO();
         dto.setId(domain.getId());
         dto.setOrganizationName(domain.getOrganizationName());
         dto.setFullName(domain.getFullName());
@@ -59,74 +56,81 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     }
 
     @Override
-    public ProfileDTO getById(Integer id) {
-        ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
-        return convertDomainToDto(domain);
+    public List<ProfileDTO> getAll(Pageable pageable) {
+        return convertDomainListToDtoList(profileDao.findAllByIsDeletedFalse(pageable).getContent());
+    }
+
+    @Override
+    public ProfileDTO getById(Integer userId) {
+        UserDomain user = userDao.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        return convertDomainToDto(user.getProfile());
     }
 
     @Override
     @Transactional
     public ProfileDTO create(ProfileDTO profile) {
-        log.info("Creando perfil {}");
-        ProfileDomain domain = new ProfileDomain();
+        log.info("Creando perfil para el usuario con ID {}", profile.getId());
+        UserDomain user = userDao.findByIdAndIsDeletedFalse(profile.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        domain.setUser(userDao.findByIdAndIsDeletedFalse(profile.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
+        if (user.getProfile() != null) {
+            throw new BadRequestException("El usuario ya tiene un perfil");
+        }
 
-        // Campos recibidos en el request
-        domain.setFullName(profile.getFullName());
-        domain.setOrganizationName(profile.getOrganizationName());
-
-        // Campos por defecto (todo null)
+        ProfileDomain domain = convertDtoToDomain(profile);
+        domain.setUser(user);
+        domain.setId(null);
         setDefaultAttributes(domain);
-        log.info("Usuario a guardar, {}", domain);
-        return convertDomainToDto(profileDao.save(domain));
+        // TEST
+        log.info("ProfileDomain a ser guardado: {}", domain);
+        ProfileDomain saved = profileDao.save(domain);
+        log.info("Perfil creado para el usuario con ID {}", profile.getId());
+        return convertDomainToDto(saved);
+        // return convertDomainToDto(profileDao.save(domain));
     }
 
     @Override
     @Transactional
     public ProfileDTO update(ProfileDTO profile) {
-        log.info("Actualizando perfil {}", profile);
-        ProfileDomain profileOrigin = profileDao.findByIdAndIsDeletedFalse(profile.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
-        // validate user exists
-        userDao.findByIdAndIsDeletedFalse(profile.getId())
+        log.info("Actualizando perfil del usuario con ID {}", profile.getId());
+        UserDomain user = userDao.findByIdAndIsDeletedFalse(profile.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        // save
-        if(profile.getGender() != null) {
+
+        ProfileDomain profileDomain = user.getProfile();
+        if (profileDomain == null) {
+            throw new ResourceNotFoundException("Perfil no encontrado");
+        }
+
+        if (profile.getGender() != null) {
             validateGender(profile.getGender().name());
         }
-        log.info("Gender validado");
-        profile.setEarnedPoints(profileOrigin.getEarnedPoints());
-        ProfileDomain profileDomainSaved = profileDao.save(convertDtoToDomain(profile));
-        return convertDomainToDto(profileDomainSaved);
+
+        profileDomain.setFullName(profile.getFullName());
+        profileDomain.setOrganizationName(profile.getOrganizationName());
+        profileDomain.setAddress(profile.getAddress());
+        profileDomain.setDescription(profile.getDescription());
+        profileDomain.setGender(profile.getGender());
+        profileDomain.setBirthdate(profile.getBirthdate());
+        profileDomain.setDocument(profile.getDocument());
+        profileDomain.setPhoneNumber(profile.getPhoneNumber());
+
+        return convertDomainToDto(profileDao.save(profileDomain));
     }
 
-    // delete when user is deleted in user service
     @Override
     @Transactional
     public void delete(Integer id) {
-        ProfileDomain domain = profileDao.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado"));
-
-        // delete profile
-        domain.setIsDeleted(true);
-
-        UserDomain user = userDao.findByIdAndIsDeletedFalse(domain.getUser().getId())
+        UserDomain user = userDao.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        // delete user
-        user.setIsDeleted(true);
-        // save
-        userDao.save(user);
-        profileDao.save(domain);
-        log.info("Perfil eliminado {}", domain);
-    }
 
-    @Override
-    public List<ProfileDTO> getAll(Pageable pageable) {
-        Page<ProfileDomain> page = profileDao.findAllByIsDeletedFalse(pageable);
-        return convertDomainListToDtoList( page.getContent());
+        ProfileDomain domain = user.getProfile();
+        if (domain == null) {
+            throw new ResourceNotFoundException("Perfil no encontrado");
+        }
+        domain.setIsDeleted(true);
+        profileDao.save(domain);
+        log.info("Perfil eliminado para el usuario con ID {}", id);
     }
 
     private ProfileDomain setDefaultAttributes(ProfileDomain domain) {
@@ -149,4 +153,5 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
             throw new BadRequestException(gender + " no es un género válido");
         }
     }
+
 }
