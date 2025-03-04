@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.controller.race;
+package com.fiuni.adoptamena.api.controller.breed;
 
 import com.fiuni.adoptamena.api.dto.breed.BreedDTO;
 import com.fiuni.adoptamena.api.service.breed.IBreedService;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/race")
 @Slf4j
 @Tag(name = "Race")
-public class RaceController {
+public class BreedController {
 
     @Autowired
     private IBreedService raceService;
