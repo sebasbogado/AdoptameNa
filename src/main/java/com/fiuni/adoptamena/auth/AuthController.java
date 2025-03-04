@@ -51,6 +51,8 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request, sendEmail));
     }
 
+    // Verificar el correo electrónico
+    // TODO Cambiar a POST
     @GetMapping("/verify-email")
     public ResponseEntity<GenericResponse> verifyEmail(@RequestParam("token") String token) {
         return ResponseEntity.ok(verificationTokenService.verifyEmail(token));
@@ -72,7 +74,8 @@ public class AuthController {
     }
 
     // Endpoint para restablecer la contraseña
-    @PostMapping("/reset-password")
+    // TODO: Cambiar a POST
+    @GetMapping("/reset-password")
     public ResponseEntity<GenericResponse> resetPassword(
             @RequestParam("token") String token,
             @RequestParam("newPassword") String newPassword) {
