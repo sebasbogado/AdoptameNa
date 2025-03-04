@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "password_reset_tokens")
 @Data
 @NoArgsConstructor
 public class PasswordResetTokenDomain implements BaseDomain {
