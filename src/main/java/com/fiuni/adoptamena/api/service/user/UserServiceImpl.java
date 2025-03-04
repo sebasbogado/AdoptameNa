@@ -35,7 +35,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDomain, UserDTO> implem
         userDTO.setEmail(domain.getEmail());
         userDTO.setRole(domain.getRole().getName());
         userDTO.setCreationDate(domain.getCreationDate());
-        userDTO.getIsVerified();
+        userDTO.setIsVerified(domain.getIsVerified());
         return userDTO;
     }
 
