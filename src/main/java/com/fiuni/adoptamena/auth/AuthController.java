@@ -26,6 +26,9 @@ public class AuthController {
     @Autowired
     private final VerificationTokenService verificationTokenService;
 
+    @Autowired
+    private final PasswordResetService passwordResetTokenService;
+
     private final Boolean sendEmail = true;
 
     @PostMapping("/login")
@@ -59,4 +62,21 @@ public class AuthController {
         return ResponseEntity.ok(verificationTokenService.sendVerificationEmail(email));
     }
 
+    // Endpoint para solicitar el restablecimiento de contraseña
+    @PostMapping("/reset-password-request")
+    public ResponseEntity<GenericResponse> resetPasswordRequest(
+            @RequestParam("email") String email) {
+        // Enviar el correo con el enlace de restablecimiento de contraseña
+        passwordResetTokenService.sendResetPasswordEmail(email);
+        return ResponseEntity.ok(new GenericResponse("Si el correo existe, se ha enviado un enlace para restablecer la contraseña."));
+    }
+
+    // Endpoint para restablecer la contraseña
+    @PostMapping("/reset-password")
+    public ResponseEntity<GenericResponse> resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword) {
+        passwordResetTokenService.resetPassword(token, newPassword);
+        return ResponseEntity.ok(new GenericResponse("Contraseña restablecida exitosamente."));
+    }
 }

@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,7 +31,10 @@ public class VerificationTokenService {
     @Autowired
     private final EmailService emailService;
 
-    private static final String BASE_VERIFICATION_LINK = "http://localhost:8080/auth/verify-email?token=";
+    @Value("${app.url}")
+    private String API_URL;
+
+    private String BASE_VERIFICATION_LINK = API_URL + "/auth/verify-email?token=";
 
     /**
      * Crea un nuevo token de verificación para un usuario y lo guarda en la base de
