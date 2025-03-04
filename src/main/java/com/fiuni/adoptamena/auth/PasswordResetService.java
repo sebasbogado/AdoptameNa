@@ -24,9 +24,10 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final AuthService authService;
 
-    // Inyectamos la URL base desde el archivo de configuración
     @Value("${app.url}")
-    private String baseUrl;
+    private String API_URL;
+
+    private static final String BASE_RESET_PASSWORD_LINK = "http://localhost:8080/auth/reset-password?token=";
 
     /**
      * Crea un nuevo token de restablecimiento de contraseña para un usuario y lo
@@ -127,7 +128,7 @@ public class PasswordResetService {
         deleteToken(user);
 
         String token = createResetToken(user);
-        emailService.sendResetPasswordEmail(user.getEmail(), baseUrl + "/reset-password?token=" + token);
+        emailService.sendResetPasswordEmail(user.getEmail(), BASE_RESET_PASSWORD_LINK + token);
 
         return GenericResponse.builder()
                 .message("Correo de restablecimiento de contraseña enviado correctamente.")

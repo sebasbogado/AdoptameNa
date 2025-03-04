@@ -7,7 +7,6 @@ import com.fiuni.adoptamena.api.domain.user.VerificationTokenDomain;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
 import com.fiuni.adoptamena.utils.EmailService;
-import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +30,7 @@ public class VerificationTokenService {
     @Autowired
     private final EmailService emailService;
 
-    // Inyectar la URL base desde el archivo de configuración
-    @Value("${api.base-url}")
-    private String baseUrl;
+    private static final String BASE_VERIFICATION_LINK = "http://localhost:8080/auth/verify-email?token=";
 
     /**
      * Crea un nuevo token de verificación para un usuario y lo guarda en la base de
@@ -116,7 +113,7 @@ public class VerificationTokenService {
         }
 
         String token = createVerificationToken(user);
-        emailService.sendVerificationEmail(user.getEmail(), baseUrl + "/verify-email?token=" + token);
+        emailService.sendVerificationEmail(user.getEmail(), BASE_VERIFICATION_LINK + token);
 
         return GenericResponse.builder()
                 .message("Correo de verificación enviado correctamente.")
