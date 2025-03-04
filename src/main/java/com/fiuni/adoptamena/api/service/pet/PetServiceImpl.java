@@ -67,7 +67,7 @@ public class PetServiceImpl extends BaseServiceImpl<PetDomain, PetDTO> implement
 
         dto.setUserId(domain.getUser().getId());
         dto.setAnimalId(domain.getAnimal().getId());
-        dto.setRaceId(domain.getRace().getId());
+        dto.setBreedId(domain.getRace().getId());
         dto.setHealthStateId(domain.getHealthState().getId());
         dto.setPetStatusId(domain.getPetStatus().getId());
 
@@ -86,7 +86,7 @@ public class PetServiceImpl extends BaseServiceImpl<PetDomain, PetDTO> implement
         petDomain.setAnimal(animalDao.findByIdAndIsDeletedFalse(dto.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado")));
 
-        petDomain.setRace(raceDao.findByIdAndIsDeletedFalse(dto.getRaceId())
+        petDomain.setRace(raceDao.findByIdAndIsDeletedFalse(dto.getBreedId())
                 .orElseThrow(() -> new ResourceNotFoundException("Raza no encontrada")));
 
         petDomain.setHealthState(healthStateDao.findByIdAndIsDeletedFalse(dto.getHealthStateId())

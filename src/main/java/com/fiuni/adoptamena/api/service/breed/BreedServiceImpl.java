@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.service.race;
+package com.fiuni.adoptamena.api.service.breed;
 
 import java.util.List;
 
@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.fiuni.adoptamena.api.domain.race.*;
-import com.fiuni.adoptamena.api.dto.race.*;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.api.dao.animal.IAnimalDao;
 import com.fiuni.adoptamena.api.dao.race.*;
+import com.fiuni.adoptamena.api.domain.breed.*;
+import com.fiuni.adoptamena.api.dto.breed.*;
 import com.fiuni.adoptamena.exception_handler.exceptions.*;
 
 import jakarta.transaction.Transactional;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implements IRaceService {
+public class BreedServiceImpl extends BaseServiceImpl<BreedDomain, BreedDTO> implements IBreedService {
 
     @Autowired
     private IRaceDao raceDao;
@@ -28,16 +28,16 @@ public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implem
     private IAnimalDao animalDao;
 
     @Override
-    protected RaceDomain convertDtoToDomain(RaceDTO dto) {
-        RaceDomain domain = new RaceDomain();
+    protected BreedDomain convertDtoToDomain(BreedDTO dto) {
+        BreedDomain domain = new BreedDomain();
         domain.setId(dto.getId());
         domain.setName(dto.getName());
         return domain;
     }
 
     @Override
-    protected RaceDTO convertDomainToDto(RaceDomain domain) {
-        RaceDTO dto = new RaceDTO();
+    protected BreedDTO convertDomainToDto(BreedDomain domain) {
+        BreedDTO dto = new BreedDTO();
         dto.setId(domain.getId());
         dto.setName(domain.getName());
         dto.setAnimalId(domain.getAnimal().getId());
@@ -46,9 +46,9 @@ public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implem
 
     @Override
     @Transactional
-    public RaceDTO create(RaceDTO dto) {
+    public BreedDTO create(BreedDTO dto) {
         log.info("llega al service");
-        RaceDomain domain = new RaceDomain();
+        BreedDomain domain = new BreedDomain();
         domain.setAnimal(animalDao.findByIdAndIsDeletedFalse(dto.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado")));
         log.info("pasa verificacion de animal");
@@ -60,8 +60,8 @@ public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implem
 
     @Override
     @Transactional
-    public RaceDTO update(RaceDTO dto) {
-        RaceDomain domain = raceDao.findByIdAndIsDeletedFalse(dto.getId())
+    public BreedDTO update(BreedDTO dto) {
+        BreedDomain domain = raceDao.findByIdAndIsDeletedFalse(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Raza no encontrada"));
         domain.setAnimal(animalDao.findByIdAndIsDeletedFalse(dto.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado")));
@@ -72,8 +72,8 @@ public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implem
     }
 
     @Override
-    public RaceDTO getById(Integer id) {
-        RaceDomain domain = raceDao.findByIdAndIsDeletedFalse(id)
+    public BreedDTO getById(Integer id) {
+        BreedDomain domain = raceDao.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Raza no encontrada"));
         return convertDomainToDto(domain);
     }
@@ -81,7 +81,7 @@ public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implem
     @Override
     @Transactional
     public void delete(Integer id) {
-        RaceDomain domain = raceDao.findByIdAndIsDeletedFalse(id)
+        BreedDomain domain = raceDao.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Raza no encontrada"));
         domain.setIsDeleted(true);
         raceDao.save(domain);
@@ -89,8 +89,8 @@ public class RaceServiceImpl extends BaseServiceImpl<RaceDomain, RaceDTO> implem
     }
 
     @Override
-    public List<RaceDTO> getAll(Pageable pageable) {
-        Page<RaceDomain> domain = raceDao.findAllByIsDeletedFalse(pageable);
+    public List<BreedDTO> getAll(Pageable pageable) {
+        Page<BreedDomain> domain = raceDao.findAllByIsDeletedFalse(pageable);
         return convertDomainListToDtoList(domain.getContent());
     }
 

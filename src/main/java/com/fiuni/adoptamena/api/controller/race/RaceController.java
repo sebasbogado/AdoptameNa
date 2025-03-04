@@ -1,7 +1,7 @@
 package com.fiuni.adoptamena.api.controller.race;
 
-import com.fiuni.adoptamena.api.dto.race.RaceDTO;
-import com.fiuni.adoptamena.api.service.race.IRaceService;
+import com.fiuni.adoptamena.api.dto.breed.BreedDTO;
+import com.fiuni.adoptamena.api.service.breed.IBreedService;
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,31 +23,31 @@ import java.util.List;
 public class RaceController {
 
     @Autowired
-    private IRaceService raceService;
+    private IBreedService raceService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<RaceDTO> get(@PathVariable Integer id) {
-        RaceDTO result = raceService.getById(id);
+    public ResponseEntity<BreedDTO> get(@PathVariable Integer id) {
+        BreedDTO result = raceService.getById(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<RaceDTO> create(@Valid @RequestBody RaceDTO race, BindingResult bindingResult) {
+    public ResponseEntity<BreedDTO> create(@Valid @RequestBody BreedDTO race, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
-        RaceDTO result = raceService.create(race);
+        BreedDTO result = raceService.create(race);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RaceDTO> update(@Valid @PathVariable Integer id, @RequestBody RaceDTO race,
+    public ResponseEntity<BreedDTO> update(@Valid @PathVariable Integer id, @RequestBody BreedDTO race,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors());
         }
         race.setId(id);
-        RaceDTO result = raceService.update(race);
+        BreedDTO result = raceService.update(race);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class RaceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RaceDTO>> getAll(Pageable pageable) {
+    public ResponseEntity<List<BreedDTO>> getAll(Pageable pageable) {
         return new ResponseEntity<>(raceService.getAll(pageable), HttpStatus.OK);
     }
 }

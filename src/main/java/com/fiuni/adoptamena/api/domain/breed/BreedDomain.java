@@ -1,4 +1,4 @@
-package com.fiuni.adoptamena.api.domain.race;
+package com.fiuni.adoptamena.api.domain.breed;
 
 import com.fiuni.adoptamena.api.domain.animal.AnimalDomain;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
@@ -8,11 +8,11 @@ import jakarta.persistence.*;
 import java.io.Serial;
 
 @Entity
-@Table(name = "races")
+@Table(name = "breeds")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RaceDomain implements BaseDomain {
+public class BreedDomain implements BaseDomain {
     @Serial
     private static final long serialVersionUID = 1L;
 
