@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class AuthControllerTest {
+public class AuthControllerTest {
 
         @Autowired
         private MockMvc mockMvc;
@@ -111,7 +111,7 @@ class AuthControllerTest {
                 mockMvc.perform(post("/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
-                                .andExpect(status().isBadRequest());
+                                .andExpect(status().isConflict());
         }
 
         @Test

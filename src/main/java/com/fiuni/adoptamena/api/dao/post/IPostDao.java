@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface IPostDao extends CrudRepository<PostDomain, Integer> {
     @Query("SELECT p FROM PostDomain p WHERE " +
             "(COALESCE(:title, '') = '' OR p.title LIKE %:title%) AND " +

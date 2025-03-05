@@ -1,12 +1,14 @@
 package com.fiuni.adoptamena.exception_handler;
 
 import com.fiuni.adoptamena.exception_handler.exceptions.BadRequestException;
+import com.fiuni.adoptamena.exception_handler.exceptions.ConflictException;
 import com.fiuni.adoptamena.exception_handler.exceptions.ForbiddenException;
 import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
 
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -122,6 +124,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex, WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    // Manejar errores ConflictException
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex, WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    // Manejar errores cuando se recibe un JSON inválido en una solicitud.
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleJsonParseException(HttpMessageNotReadableException ex,
+            WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse(
+                "JSON inválido. Verifica la estructura y los tipos de datos enviados.",
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     // Manejar excepciones generales que no han sido capturadas por manejadores
