@@ -72,7 +72,7 @@ public class PetController {
         }
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}/user")
     public List<PetDTO> getPetByUserID(@PathVariable Integer userId) {
         return petService.getPetByUserId(userId);
     }
