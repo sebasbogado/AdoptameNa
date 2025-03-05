@@ -31,7 +31,7 @@ public class VerificationTokenService {
     @Autowired
     private final EmailService emailService;
 
-    private static final String BASE_VERIFICATION_LINK = "http://localhost:8080/auth/verify-email?token=";
+    private static final String BASE_VERIFICATION_LINK = "http://localhost:3000/verify-email?token=";
 
     /**
      * Crea un nuevo token de verificación para un usuario y lo guarda en la base de
