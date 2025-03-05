@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-// Otras importaciones...
 
 @Configuration
 @EnableWebSecurity
@@ -35,13 +34,26 @@ public class SecurityConfig {
         @Autowired
         private CustomAuthenticationEntryPoint authenticationEntryPoint;
 
+        @SuppressWarnings("deprecation")
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 return http
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .cors(cors -> cors.configurationSource(
-                                                request -> new org.springframework.web.cors.CorsConfiguration()))
-                                .authorizeHttpRequests(authRequest -> authRequest
+                                                request -> {
+                                                        var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                                                        corsConfig.addAllowedOrigin("*");
+                                                        corsConfig.addAllowedMethod("GET");
+                                                        corsConfig.addAllowedMethod("POST");
+                                                        corsConfig.addAllowedMethod("PUT");
+                                                        corsConfig.addAllowedMethod("DELETE");
+                                                        corsConfig.addAllowedMethod("OPTIONS");
+                                                        corsConfig.addAllowedHeader("*"); // Permitir todos los
+                                                                                          // encabezados
+                                                        corsConfig.setAllowCredentials(true); // Permitir credenciales
+                                                        return corsConfig;
+                                                }))
+                                .authorizeRequests(authRequest -> authRequest
                                                 .requestMatchers(
                                                                 "/auth/**", // Permitir endpoints de autenticación
                                                                 "/swagger-ui/**", // Permitir Swagger UI
