@@ -13,5 +13,5 @@ import java.util.List;
 public interface IPetDao extends CrudRepository<PetDomain, Integer> {
     Optional<PetDomain> findByIdAndIsDeletedFalse(Integer id);
     Page<PetDomain> findAllByIsDeletedFalse(Pageable pageable);
-    List<PetDomain> findAllByIsDeletedFalse(Integer userID);
+    List<PetDomain> findByUserIdAndIsDeletedFalse(Integer userID);
 }

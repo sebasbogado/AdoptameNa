@@ -3,6 +3,9 @@ package com.fiuni.adoptamena.api.controller.pet;
 import com.fiuni.adoptamena.api.dto.pet.PetDTO;
 import com.fiuni.adoptamena.api.service.pet.IPetService;
 import com.fiuni.adoptamena.exception_handler.exceptions.ResourceNotFoundException;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -11,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
 @RequestMapping("/pets")
+@Tag(name="Pets")
 public class PetController {
 
     @Autowired

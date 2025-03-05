@@ -139,7 +139,7 @@ public class PetServiceImpl extends BaseServiceImpl<PetDomain, PetDTO> implement
 
     @Override
     public List<PetDTO> getPetByUserId(Integer userId) {
-        List<PetDomain> domain = petDao.findAllByIsDeletedFalse(userId);
+        List<PetDomain> domain = petDao.findByUserIdAndIsDeletedFalse(userId);
         return convertDomainListToDtoList(domain);
     }
 }
