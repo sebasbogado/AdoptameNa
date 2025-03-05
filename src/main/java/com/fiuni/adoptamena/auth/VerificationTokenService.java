@@ -88,6 +88,7 @@ public class VerificationTokenService {
 
         UserDomain user = verificationToken.getUser();
         user.setIsVerified(true);
+        userDao.save(user);
 
         deleteToken(user);
 
