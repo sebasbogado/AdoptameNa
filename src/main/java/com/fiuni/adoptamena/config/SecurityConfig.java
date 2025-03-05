@@ -42,7 +42,8 @@ public class SecurityConfig {
                                 .cors(cors -> cors.configurationSource(
                                                 request -> {
                                                         var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                                                        corsConfig.addAllowedOrigin("*");
+                                                        corsConfig.addAllowedOriginPattern("*"); // Permitir todas las
+                                                                                                 // URL
                                                         corsConfig.addAllowedMethod("GET");
                                                         corsConfig.addAllowedMethod("POST");
                                                         corsConfig.addAllowedMethod("PUT");
