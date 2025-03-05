@@ -9,7 +9,6 @@ import com.fiuni.adoptamena.exception_handler.exceptions.GoneException;
 import com.fiuni.adoptamena.utils.EmailService;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
