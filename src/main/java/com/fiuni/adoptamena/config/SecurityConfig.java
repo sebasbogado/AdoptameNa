@@ -39,17 +39,19 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 return http
                                 .csrf(AbstractHttpConfigurer::disable)
-                                .cors(AbstractHttpConfigurer::disable)
+                                .cors(cors -> cors.configurationSource(
+                                                request -> new org.springframework.web.cors.CorsConfiguration()))
                                 .authorizeHttpRequests(authRequest -> authRequest
-                                .requestMatchers(
-                                    "/auth/**",                      // Permitir endpoints de autenticación
-                                    "/swagger-ui/**",                // Permitir Swagger UI
-                                    "/swagger-ui.html",              // Página principal de Swagger
-                                    "/v3/api-docs/**",               // Documentación OpenAPI
-                                    "/v3/api-docs/swagger-config",   // Configuración de Swagger
-                                    "/webjars/**"                     // Recursos estáticos de Swagger
-                                ).permitAll()
-                                .anyRequest().authenticated())
+                                                .requestMatchers(
+                                                                "/auth/**", // Permitir endpoints de autenticación
+                                                                "/swagger-ui/**", // Permitir Swagger UI
+                                                                "/swagger-ui.html", // Página principal de Swagger
+                                                                "/v3/api-docs/**", // Documentación OpenAPI
+                                                                "/v3/api-docs/swagger-config", // Configuración de
+                                                                                               // Swagger
+                                                                "/webjars/**" // Recursos estáticos de Swagger
+                                                ).permitAll()
+                                                .anyRequest().authenticated())
                                 .exceptionHandling(exceptions -> exceptions
                                                 .authenticationEntryPoint(authenticationEntryPoint)
                                                 .accessDeniedHandler(accessDeniedHandler))
