@@ -63,6 +63,7 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
 
     @Override
     public ProfileDTO getById(Integer userId) {
+
         UserDomain user = userDao.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         return convertDomainToDto(user.getProfile());
@@ -158,13 +159,17 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
     @Override
     public UserProfileDTO getUserProfileDTO(Integer id) {
         UserProfileDTO dto = new UserProfileDTO();
-        ProfileDTO profile = getById(id);
+        ProfileDomain profile = userDao.findByIdAndIsDeletedFalse(id).orElseThrow(
+                () -> new ResourceNotFoundException("Usuario con ID " + id + " no encontrado")).getProfile();
+        UserDomain user = userDao.findByIdAndIsDeletedFalse(id).orElseThrow(
+                () -> new ResourceNotFoundException("Usuario con ID " + id + " no encontrado"));
+
         dto.setId(profile.getId());
         dto.setFullName(profile.getFullName());
-        dto.setEmail(userDao.findByIdAndIsDeletedFalse(id).get().getEmail());
-        dto.setCreationDate(userDao.findByIdAndIsDeletedFalse(id).get().getCreationDate());
-        dto.setRole(userDao.findByIdAndIsDeletedFalse(id).get().getRole().getName());
-        dto.setIsVerified(userDao.findByIdAndIsDeletedFalse(id).get().getIsVerified());
+        dto.setEmail(user.getEmail());
+        dto.setCreationDate(user.getCreationDate());
+        dto.setRole(user.getRole().getName());
+        dto.setIsVerified(user.getIsVerified());
         return dto;
     }
 
