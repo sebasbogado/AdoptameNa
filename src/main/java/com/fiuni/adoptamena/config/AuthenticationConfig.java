@@ -42,7 +42,7 @@ public class AuthenticationConfig {
     @Bean
     public UserDetailsService userDetailService() {
         return email -> userDao.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not fournd: F"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not fournd: " + email));
     }
 
 }

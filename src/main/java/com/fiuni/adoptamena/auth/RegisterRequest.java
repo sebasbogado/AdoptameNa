@@ -14,6 +14,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
+    @Size(min = 3, max = 100, message = "El nombre de la organización debe tener entre 3 y 50 caracteres")
+    String organizationName;
+
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 50 caracteres")
+    String fullName;
+
     @NotBlank(message = "El email no puede estar vacío")
     @Email(message = "Formato de email incorrecto")
     String email;
