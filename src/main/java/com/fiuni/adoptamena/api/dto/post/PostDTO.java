@@ -1,6 +1,8 @@
 package com.fiuni.adoptamena.api.dto.post;
 
+import com.fiuni.adoptamena.api.dto.base.BaseDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,14 +17,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class PostDTO implements Serializable {
+public class PostDTO extends BaseDTO {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    private Integer id;
-
-    @NotBlank(message = "El usuario debe ser Obligatorio.")
+    @NotNull
     private Integer idUser;
 
     @NotBlank(message = "El titulo es Obligatorio.")
@@ -31,7 +28,7 @@ public class PostDTO implements Serializable {
 
     private String content;
 
-    @NotBlank(message = "El tipo de post debe ser Obligatorio.")
+    @NotNull
     private Integer idPostType;
 
     private String locationCoordinates;

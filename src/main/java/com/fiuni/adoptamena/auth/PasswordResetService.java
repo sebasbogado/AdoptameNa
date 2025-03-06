@@ -27,9 +27,11 @@ public class PasswordResetService {
     @Value("${app.url}")
     private String API_URL;
 
-    private static final String BASE_RESET_PASSWORD_LINK = "localhost:8080/auth/reset-password?token=";
+    private static final String BASE_RESET_PASSWORD_LINK = "https://test--relaxed-bienenstitch-1d8d39.netlify.app/reset-password?token=";
+
     /**
-     * Crea un nuevo token de restablecimiento de contraseña para un usuario y lo guarda en la base de datos.
+     * Crea un nuevo token de restablecimiento de contraseña para un usuario y lo
+     * guarda en la base de datos.
      * 
      * @param user Usuario para el cual se genera el token
      * @return Token de restablecimiento de contraseña generado
@@ -50,7 +52,8 @@ public class PasswordResetService {
      */
     public PasswordResetTokenDomain getResetToken(String token) {
         return passwordResetTokenDao.findByToken(token)
-                .orElseThrow(() -> new BadRequestException("Token de restablecimiento de contraseña inválido o expirado."));
+                .orElseThrow(
+                        () -> new BadRequestException("Token de restablecimiento de contraseña inválido o expirado."));
     }
 
     /**
@@ -89,7 +92,7 @@ public class PasswordResetService {
     /**
      * Permite al usuario establecer una nueva contraseña.
      * 
-     * @param token Token de restablecimiento de contraseña
+     * @param token       Token de restablecimiento de contraseña
      * @param newPassword Nueva contraseña del usuario
      * @return Respuesta con mensaje de éxito
      */
