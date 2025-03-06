@@ -5,6 +5,7 @@ import com.fiuni.adoptamena.api.dao.user.IUserDao;
 import com.fiuni.adoptamena.api.domain.profile.*;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
 import com.fiuni.adoptamena.api.dto.profile.ProfileDTO;
+import com.fiuni.adoptamena.api.dto.user.UserProfileDTO;
 import com.fiuni.adoptamena.api.service.base.BaseServiceImpl;
 import com.fiuni.adoptamena.exception_handler.exceptions.*;
 import jakarta.transaction.Transactional;
@@ -152,6 +153,19 @@ public class ProfileServiceImpl extends BaseServiceImpl<ProfileDomain, ProfileDT
         } catch (IllegalArgumentException e) {
             throw new BadRequestException(gender + " no es un género válido");
         }
+    }
+
+    @Override
+    public UserProfileDTO getUserProfileDTO(Integer id) {
+        UserProfileDTO dto = new UserProfileDTO();
+        ProfileDTO profile = getById(id);
+        dto.setId(profile.getId());
+        dto.setFullName(profile.getFullName());
+        dto.setEmail(userDao.findByIdAndIsDeletedFalse(id).get().getEmail());
+        dto.setCreationDate(userDao.findByIdAndIsDeletedFalse(id).get().getCreationDate());
+        dto.setRole(userDao.findByIdAndIsDeletedFalse(id).get().getRole().getName());
+        dto.setIsVerified(userDao.findByIdAndIsDeletedFalse(id).get().getIsVerified());
+        return dto;
     }
 
 }

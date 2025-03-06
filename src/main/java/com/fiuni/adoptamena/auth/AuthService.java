@@ -76,6 +76,7 @@ public class AuthService {
         // Generar y devolver el token de autenticación
         return AuthResponse.builder()
                 .token(jwtService.getToken(user))
+                .user(profileService.getUserProfileDTO(user.getId()))
                 .build();
     }
 
