@@ -5,7 +5,6 @@ import java.io.Serial;
 import com.fiuni.adoptamena.api.domain.animal.AnimalDomain;
 import com.fiuni.adoptamena.api.domain.base.BaseDomain;
 import com.fiuni.adoptamena.api.domain.breed.BreedDomain;
-import com.fiuni.adoptamena.api.domain.health_state.HealthStateDomain;
 import com.fiuni.adoptamena.api.domain.pet_status.PetStatusDomain;
 import com.fiuni.adoptamena.api.domain.profile.EnumGender;
 import com.fiuni.adoptamena.api.domain.user.UserDomain;
@@ -62,10 +61,6 @@ public class PetDomain implements BaseDomain {
     @ManyToOne
     @JoinColumn(name = "fk_id_breed", referencedColumnName = "id_breed" ,nullable = false)
     private BreedDomain breed;
-
-    @ManyToOne
-    @JoinColumn(name = "fk_id_health_state",referencedColumnName = "id_health_state" , nullable = false)
-    private HealthStateDomain healthState;
 
     @ManyToOne
     @JoinColumn(name = "fk_id_pet_status", referencedColumnName = "id_pet_status" ,nullable = false)
