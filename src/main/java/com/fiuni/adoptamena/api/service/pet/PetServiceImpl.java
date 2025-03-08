@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.fiuni.adoptamena.api.dao.animal.IAnimalDao;
+import com.fiuni.adoptamena.api.dao.breed.*;
 import com.fiuni.adoptamena.api.dao.user.*;
-import com.fiuni.adoptamena.api.dao.race.*;
 import com.fiuni.adoptamena.api.dao.health_state.*;
 import com.fiuni.adoptamena.api.dao.pet_status.*;
 import java.util.List;
@@ -31,7 +31,7 @@ public class PetServiceImpl extends BaseServiceImpl<PetDomain, PetDTO> implement
     private IAnimalDao animalDao;
 
     @Autowired
-    private IRaceDao raceDao;
+    private IBreedDao breedDao;
 
     @Autowired
     private IHealthStateDao healthStateDao;
@@ -67,7 +67,7 @@ public class PetServiceImpl extends BaseServiceImpl<PetDomain, PetDTO> implement
 
         dto.setUserId(domain.getUser().getId());
         dto.setAnimalId(domain.getAnimal().getId());
-        dto.setBreedId(domain.getRace().getId());
+        dto.setBreedId(domain.getBreed().getId());
         dto.setHealthStateId(domain.getHealthState().getId());
         dto.setPetStatusId(domain.getPetStatus().getId());
 
@@ -86,7 +86,7 @@ public class PetServiceImpl extends BaseServiceImpl<PetDomain, PetDTO> implement
         petDomain.setAnimal(animalDao.findByIdAndIsDeletedFalse(dto.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado")));
 
-        petDomain.setRace(raceDao.findByIdAndIsDeletedFalse(dto.getBreedId())
+        petDomain.setBreed(breedDao.findByIdAndIsDeletedFalse(dto.getBreedId())
                 .orElseThrow(() -> new ResourceNotFoundException("Raza no encontrada")));
 
         petDomain.setHealthState(healthStateDao.findByIdAndIsDeletedFalse(dto.getHealthStateId())

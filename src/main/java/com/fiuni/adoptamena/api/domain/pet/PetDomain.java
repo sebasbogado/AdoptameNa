@@ -60,8 +60,8 @@ public class PetDomain implements BaseDomain {
     private AnimalDomain animal;
 
     @ManyToOne
-    @JoinColumn(name = "fk_id_race", referencedColumnName = "id_race" ,nullable = false)
-    private BreedDomain race;
+    @JoinColumn(name = "fk_id_breed", referencedColumnName = "id_breed" ,nullable = false)
+    private BreedDomain breed;
 
     @ManyToOne
     @JoinColumn(name = "fk_id_health_state",referencedColumnName = "id_health_state" , nullable = false)
